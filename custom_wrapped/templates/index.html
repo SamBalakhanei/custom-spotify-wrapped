@@ -6,8 +6,13 @@
     <title>Spotify Wrapped</title>
 </head>
 <body>
-<h1>Hello! This is Sam!</h1>
-<a href="{% url 'social:begin' 'spotify' %}" class="btn btn-primary">Login with Spotify</a>
+<h1>Hello! Welcome to your spotify wrapped!</h1>
+    {% if request.session.spotify_access_token %}
+        <p>You are logged in with Spotify!</p>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'spotify_login' %}">Login with Spotify</a>
+    {% endif %}
 
 
 </body>

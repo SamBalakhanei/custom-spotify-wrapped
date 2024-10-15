@@ -4,7 +4,8 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('', include('django.contrib.auth.urls')),  # Django auth
-    path('spotify/', include('social_django.urls', namespace='social')),  # Spotify login and callback
+    path('spotify/login/', views.spotify_login, name='spotify_login'),
+    path('spotify/callback/', views.spotify_callback, name='spotify_callback'),
+    path('logout/', views.logout, name='logout'),
 
 ]
