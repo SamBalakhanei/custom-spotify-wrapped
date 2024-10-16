@@ -13,9 +13,26 @@ CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 REDIRECT_URI = 'http://127.0.0.1:8000/spotify/callback/'
 SCOPES = 'user-top-read user-read-playback-state user-modify-playback-state streaming'
+
+
 def index(request):
+    access_token = request.session.get('spotify_access_token')
     template_name = 'index.html'
-    return render(request, template_name)
+    if access_token:
+
+        user_profile = get_spotify_user_profile(access_token)
+
+        if user_profile:
+            username = user_profile.get('display_name')
+        else:
+            username = "Unknown User"
+    else:
+        username = None
+    context = {
+        'username': username,
+    }
+
+    return render(request, template_name, context)
 
 
 def spotify_login(request):
@@ -54,4 +71,17 @@ def spotify_callback(request):
 def logout(request):
     request.session.flush()
     return redirect('index')
+
+
+def get_spotify_user_profile(access_token):
+    url = 'https://api.spotify.com/v1/me'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+    response = requests.get(url, headers=headers)
+
+    if response.status_code == 200:
+        return response.json()
+    else:
+        return None
 
