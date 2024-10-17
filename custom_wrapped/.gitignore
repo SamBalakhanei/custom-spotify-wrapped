@@ -1,3 +1,4 @@
 .env
-.pyc
+node_modules/
+custom_wrapped/custom_wrapped/__pycache__/
 *.pyc

@@ -11,6 +11,8 @@
         <p>You are logged in with Spotify!</p>
         <p>Hello {{ username }}!</p>  
         <a href="{% url 'logout' %}">Logout</a>
+        <a href="{% url 'spotify_get_top_tracks' limit=10 period="long_term"%}">Get tracks</a>
+
     {% else %}
         <a href="{% url 'spotify_login' %}">Login with Spotify</a>
     {% endif %}
