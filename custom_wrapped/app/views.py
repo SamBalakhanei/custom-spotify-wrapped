@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 import requests
 from django.conf import settings
-
+from django.http import JsonResponse
 
 
 load_dotenv()
@@ -84,4 +84,94 @@ def get_spotify_user_profile(access_token):
         return response.json()
     else:
         return None
+
+
+def get_top_tracks(request, limit, period):
+    endpoint = 'https://api.spotify.com/v1/me/top/tracks'
+
+    try:
+        headers = {
+            'Authorization': f'Bearer {request.session['spotify_access_token'] }',
+        }
+        
+        params = {
+            "limit": limit,
+            "time_range" : period
+        }
+        
+        response = requests.get(endpoint, headers=headers, params=params)
+        
+        data = response.json()
+        top_tracks = {}
+        num_tracks = 1
+        
+        for datum in data["items"]:   
+            artists = []
+            for artist in datum["artists"]:
+                artists.append({
+                    "name": artist["name"],
+                    "artist_link": artist["href"]
+                })  
+                                  
+            top_tracks[num_tracks] = {
+                "track_name" : datum["name"],
+                "mp3_preview_url": datum["preview_url"],
+                "track_url" : datum["external_urls"]["spotify"],
+                "duration_ms": datum["duration_ms"],
+                "artists": artists,
+                "album_name": datum["album"]["name"],
+                "album_link": datum["album"]["external_urls"]["spotify"],
+                "album_image": datum["album"]["images"][0]["url"],
+                "release_date": datum["album"]["release_date"],
+            }
+            
+            num_tracks += 1
+            
+        return JsonResponse(top_tracks, status=200)
+    except Exception as e:
+        error_data = {
+            "message": "Operation failed",
+            "error": str(e)
+        }
+            
+        return JsonResponse(error_data, status=500)
+
+def get_top_artists(request, limit, period):
+    endpoint = 'https://api.spotify.com/v1/me/top/artists'
+
+    try:
+        headers = {
+            'Authorization': f'Bearer {request.session['spotify_access_token'] }',
+        }
+        
+        params = {
+            "limit": limit,
+            "time_range" : period
+        }
+        
+        response = requests.get(endpoint, headers=headers, params=params)
+        
+        data = response.json()
+        top_artists = {}
+        num_artists = 1
+        
+        for datum in data["items"]:                    
+            top_artists[num_artists] = {
+                "name": datum["name"],
+                "artist_url": datum["external_urls"]["spotify"],
+                "genres": datum["genres"],
+                "image_url": datum["images"][0]["url"]
+            }
+            
+            num_artists += 1
+            
+        return JsonResponse(top_artists, status=200)
+    except Exception as e:
+        error_data = {
+            "message": "Operation failed",
+            "error": str(e)
+        }
+            
+        return JsonResponse(error_data, status=500)
+
 
