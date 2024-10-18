@@ -7,15 +7,19 @@
 </head>
 <body>
 <h1>Hello! Welcome to your spotify wrapped!</h1>
-    {% if request.session.spotify_access_token %}
-        <p>You are logged in with Spotify!</p>
-        <p>Hello {{ username }}!</p>  
+    {% if user.is_authenticated %}
+        <p>Hello {{ user.username }}, you are logged into CSW!</p>
+        {% if access_token %}
+            <p>You are logged in with Spotify!</p>
+            <a href="{% url 'spotify_get_top_tracks' limit=10 period="long_term"%}">Get tracks</a>
+            <a href="{% url 'spotify_get_top_artists' limit=10 period="long_term"%}">Get artists</a>
+        {% else %}
+            <a href="{% url 'spotify_login' %}">Login with Spotify</a>
+        {% endif %}
         <a href="{% url 'logout' %}">Logout</a>
-        <a href="{% url 'spotify_get_top_tracks' limit=10 period="long_term"%}">Get tracks</a>
-        <a href="{% url 'spotify_get_top_artists' limit=10 period="long_term"%}">Get artists</a>
-
     {% else %}
-        <a href="{% url 'spotify_login' %}">Login with Spotify</a>
+        <a href="{% url 'register' %}">Register</a>
+        <a href="{% url 'login' %}">Login</a>
     {% endif %}
 
 
