@@ -11,8 +11,8 @@
         <p>Hello {{ user.username }}, you are logged into CSW!</p>
         {% if access_token %}
             <p>You are logged in with Spotify!</p>
-            <a href="{% url 'spotify_get_top_tracks' limit=10 period="long_term"%}">Get tracks</a>
-            <a href="{% url 'spotify_get_top_artists' limit=10 period="long_term"%}">Get artists</a>
+            <a href="{% url 'get_top_tracks' limit=10 period="long_term"%}">Get tracks</a>
+            <a href="{% url 'get_top_artists' limit=10 period="long_term"%}">Get artists</a>
         {% else %}
             <a href="{% url 'spotify_login' %}">Login with Spotify</a>
         {% endif %}

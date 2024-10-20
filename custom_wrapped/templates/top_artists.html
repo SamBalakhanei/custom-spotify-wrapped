@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Top Spotify Artists</title>
+</head>
+<body>
+    <h1>Your Top Spotify Artists</h1>
+    <ul>
+        {% if top_artists %}
+            {% for artist_num, artist in top_artists.items %}
+                <li>
+                    <strong>{{ artist_num }}. <a href="{{ artist.artist_url }}">{{ artist.name }}</a></strong><br>
+                    Genres: {{ artist.genres }}<br>
+                    <img src="{{ artist.image_url }}" alt="{{ artist.name }}" style="width:100px;">
+                </li>
+            {% endfor %}
+        {% else %}
+            <p>No artists found for this period.</p>
+        {% endif %}
+    </ul>
+</body>
+</html>
