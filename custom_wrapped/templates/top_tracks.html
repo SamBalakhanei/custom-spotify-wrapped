@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Top Spotify Tracks</title>
+</head>
+<body>
+    <h1>Your Top Spotify Tracks</h1>
+
+    <ul>
+        {% if top_tracks %}
+            {% for track_num, track in top_tracks.items %}
+                <li>
+                    <strong>{{ track_num }}. {{ track.track_name }}</strong><br>
+                    <a href="{{ track.track_url }}">Listen on Spotify</a><br>
+                    Album: <a href="{{ track.album_link }}">{{ track.album_name }}</a><br>
+                    Release Date: {{ track.release_date }}<br>
+                    <img src="{{ track.album_image }}" alt="Album Cover" style="width:100px;"><br>
+                    Artists:
+                    <ul>
+                        {% for artist in track.artists %}
+                            <li><a href="{{ artist.artist_link }}">{{ artist.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    {% if track.mp3_preview_url %}
+                        <!-- only show mp3 if it exists -->
+                        <audio controls>
+                            <source src="{{ track.mp3_preview_url }}" type="audio/mpeg">
+                            Your browser does not support the audio element.
+                        </audio>
+                    {% else %}
+                        <p>No preview available for this track.</p>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% else %}
+            <p>No tracks found for this period.</p>
+        {% endif %}
+    </ul>
+</body>
+</html>

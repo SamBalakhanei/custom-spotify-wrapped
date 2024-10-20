@@ -11,6 +11,7 @@ import datetime
 from django.utils import timezone
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
+from .utils.spotify_utils import process_top_tracks, process_top_artists
 
 load_dotenv()
 
@@ -148,6 +149,8 @@ def get_spotify_user_profile(access_token):
     else:
         return None
 
+def show_top_tracks(request):
+    return render(request, 'top_tracks.html')
 
 def get_top_tracks(request, limit, period):
     endpoint = 'https://api.spotify.com/v1/me/top/tracks'
@@ -156,50 +159,33 @@ def get_top_tracks(request, limit, period):
 
     try:
         headers = {
-            'Authorization': f'Bearer { token.access_token }',
+            'Authorization': f'Bearer {token.access_token}',
         }
-        
+
         params = {
             "limit": limit,
-            "time_range" : period
+            "time_range": period
         }
-        
+
         response = requests.get(endpoint, headers=headers, params=params)
-        
         data = response.json()
-        top_tracks = {}
-        num_tracks = 1
-        
-        for datum in data["items"]:   
-            artists = []
-            for artist in datum["artists"]:
-                artists.append({
-                    "name": artist["name"],
-                    "artist_link": artist["href"]
-                })  
-                                  
-            top_tracks[num_tracks] = {
-                "track_name" : datum["name"],
-                "mp3_preview_url": datum["preview_url"],
-                "track_url" : datum["external_urls"]["spotify"],
-                "duration_ms": datum["duration_ms"],
-                "artists": artists,
-                "album_name": datum["album"]["name"],
-                "album_link": datum["album"]["external_urls"]["spotify"],
-                "album_image": datum["album"]["images"][0]["url"],
-                "release_date": datum["album"]["release_date"],
-            }
-            
-            num_tracks += 1
-            
-        return JsonResponse(top_tracks, status=200)
+
+        # Process the top tracks using the utility function
+        top_tracks = process_top_tracks(data)
+
+        # Render the processed data in a template
+        return render(request, 'top_tracks.html', {'top_tracks': top_tracks})
+
     except Exception as e:
         error_data = {
             "message": "Operation failed",
             "error": str(e)
         }
-            
         return JsonResponse(error_data, status=500)
+
+def show_top_artists(request):
+    return render(request, 'top_artists.html')
+from .utils.spotify_utils import process_top_artists
 
 def get_top_artists(request, limit, period):
     endpoint = 'https://api.spotify.com/v1/me/top/artists'
@@ -208,37 +194,28 @@ def get_top_artists(request, limit, period):
 
     try:
         headers = {
-            'Authorization': f'Bearer { token.access_token }',
+            'Authorization': f'Bearer {token.access_token}',
         }
-        
+
         params = {
             "limit": limit,
-            "time_range" : period
+            "time_range": period
         }
-        
+
         response = requests.get(endpoint, headers=headers, params=params)
-        
         data = response.json()
-        top_artists = {}
-        num_artists = 1
-        
-        for datum in data["items"]:                    
-            top_artists[num_artists] = {
-                "name": datum["name"],
-                "artist_url": datum["external_urls"]["spotify"],
-                "genres": datum["genres"],
-                "image_url": datum["images"][0]["url"]
-            }
-            
-            num_artists += 1
-            
-        return JsonResponse(top_artists, status=200)
+
+        # Process the top artists using the utility function
+        top_artists = process_top_artists(data)
+
+        # Render the processed data in a template
+        return render(request, 'top_artists.html', {'top_artists': top_artists})
+
     except Exception as e:
         error_data = {
             "message": "Operation failed",
             "error": str(e)
         }
-            
         return JsonResponse(error_data, status=500)
 
 
