@@ -1,5 +1,12 @@
 {
   "devDependencies": {
     "tailwindcss": "^3.4.14"
+  },
+  "dependencies": {
+    "django": "^99.99.99"
+  },
+     "scripts": {
+      "tailwind-watch": "tailwindcss -i ./static/src/input.css -o ./static/src/output.css --watch"
   }
+
 }

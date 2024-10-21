@@ -3,3 +3,4 @@ node_modules/
 custom_wrapped/custom_wrapped/__pycache__/
 *.pyc
 custom_wrapped/package-lock.json
+custom_wrapped/static/CACHE/
