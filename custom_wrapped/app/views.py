@@ -135,7 +135,7 @@ def logout(request):
     return redirect('index')
 
 
-@login_required
+
 def profile(request):
     user = request.user
     template_name = 'profile.html'
