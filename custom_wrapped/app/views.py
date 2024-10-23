@@ -103,13 +103,10 @@ def spotify_callback(request):
     # Make a request to get the access token
     response = requests.post(token_url, data=payload, headers=headers)
     token_data = response.json()
-    print("GOT JSON")
 
     # Calculate the expiration time for the token
     expires_in_seconds = token_data['expires_in']
-    print(f"EXPIRES IN SECONDS = {expires_in_seconds}")
     expires_at = timezone.now() + datetime.timedelta(seconds=expires_in_seconds)
-    print(f"EXPIRES AT = {expires_at}")
 
     # Get or create the SpotifyToken object for the current user
     user = request.user
@@ -132,9 +129,21 @@ def spotify_callback(request):
     return redirect('index')
 
 
+@login_required
 def logout(request):
     request.session.flush()
     return redirect('index')
+
+
+@login_required
+def profile(request):
+    user = request.user
+    template_name = 'profile.html'
+    context = {
+        'user': user,
+    }
+    return render(request, template_name, context)
+
 
 
 def get_spotify_user_profile(access_token):
