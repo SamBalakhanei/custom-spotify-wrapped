@@ -22,3 +22,11 @@ class SpotifyToken(models.Model):
         self.access_token = new_access_token
         self.expires_in = timezone.now() + datetime.timedelta(seconds=new_expires_in)
         self.save()
+
+class Wrap(models.Model):
+    tracks = models.JSONField(default=dict)
+    artists = models.JSONField(default=dict)
+    datetime = models.DateTimeField(default=timezone.now)
+
+    #default name date
+

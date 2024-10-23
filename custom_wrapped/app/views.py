@@ -6,12 +6,13 @@ import requests
 from django.http import JsonResponse
 from .forms import RegisterForm
 from django.contrib.auth import login, authenticate
-from .models import SpotifyToken
+from .models import SpotifyToken, Wrap
 import datetime
 from django.utils import timezone
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .utils.spotify_utils import process_top_tracks, process_top_artists
+from django.db import models
 
 load_dotenv()
 
@@ -201,7 +202,6 @@ def get_top_artists(request, limit, period):
             "limit": limit,
             "time_range": period
         }
-
         response = requests.get(endpoint, headers=headers, params=params)
         data = response.json()
 
@@ -218,4 +218,9 @@ def get_top_artists(request, limit, period):
         }
         return JsonResponse(error_data, status=500)
 
+def past_wraps(request):
+    wraps = Wrap.objects.all()
+    return render(request, 'past_wraps.html', {'wraps': wraps})
 
+def save_wrap(request, tracks, artists):
+    Wrap.objects.create(tracks=tracks, artists=artists)
