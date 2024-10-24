@@ -1,14 +1,30 @@
 {% extends "_base.html" %}
  
 {% block content %}
+    <script>
+        function changeTheme() {
+            const selectedTheme = document.getElementById('themes').value;
+            const htmlElement = document.documentElement;
+            htmlElement.setAttribute('data-theme', selectedTheme);
+        }
+    </script>
+
     <div class="container text-text">
-        <div class="w-36 text-right p-1">
-            <select id="themes" class="block w-full px-4 py-2 text-gray-700 bg-background border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500">
-                <option value="dark" selected>Dark</option>
-                <option value="light">Light</option>
-                <option value="halloween">Halloween</option>
-                <option value="christmas">Christmas</option>
-            </select>
+        <div class="flow-root">
+            <div class="w-38 float-right p-2 pr-5 ">
+                <span>
+                    <p class="inline-block pr-1">Theme</p>
+                    <select id="themes" onchange="changeTheme()" class="inline-block px-2 py-1.5 text-gray-700 bg-background border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500">
+                        <option value="dark" selected>Dark</option>
+                        <option value="light">Light</option>
+                        <option value="halloween">Halloween</option>
+                        <option value="christmas">Christmas</option>
+
+                    </select>
+                </span>
+
+                  
+            </div>
         </div>
 
         {% if user.is_authenticated %}
@@ -48,7 +64,7 @@
             {% else %}
                 <div class="flex flex-row justify-center items-center">
                     <a href="{% url 'spotify_login' %}">
-                        <button type="button" class="center	focus:outline-none text-text bg-accent font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
+                        <button type="button" class="center	focus:outline-none text-white bg-accent font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">
                             <span>
                                 <img class="inline-block align-middle w-5 h-5 object-scale-down" src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_White.png">
                                 <p class="inline-block align-middle pl-1">Login with Spotify </p>

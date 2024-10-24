@@ -9,7 +9,8 @@ module.exports = {
       text: 'var(--color-text)',
       backgroundText: 'var(--color-background-text)',
       darkAccent: 'var(--color-dark-accent)',
-      hover: 'var(--color-hover)'
+      hover: 'var(--color-hover)',
+      white: '#FFFFFF'
     },
     container: {
       center: true,
