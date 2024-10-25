@@ -1,28 +1,67 @@
 {% load compress %}
 {% load static %}
- 
+
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
- 
+<html lang="en" data-theme="{{ theme|default:'dark' }}">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content=
-        "width=device-width, initial-scale=1.0">
-    <title>Custom Spotify Wrapped</title>
- 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Custom Spotify Wrapped{% endblock title %}</title>
+
     {% compress css %}
-    <link rel="stylesheet"
-        href="{% static 'src/output.css' %}">
+    <link rel="stylesheet" href="{% static 'CSS/swiper-bundle.min.css' %}">
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% block extra_css %}
+    <!-- Additional CSS can be added by child templates here -->
+    {% endblock extra_css %}
     {% endcompress %}
- 
 </head>
- 
+
 <body class="bg-background font-sans">
+    <!-- Theme Selector -->
+    <div class="flow-root">
+        <div class="w-38 float-right p-2 pr-5">
+            <span>
+                <p class="text-text inline-block pr-1">Theme</p>
+                <select id="themes" onchange="changeTheme()" aria-label="Select Theme" class="text-text inline-block px-2 py-1.5 text-gray-700 bg-background border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500">
+                    <option value="dark">Dark</option>
+                    <option value="light">Light</option>
+                    <option value="halloween">Halloween</option>
+                    <option value="christmas">Christmas</option>
+                </select>
+            </span>
+        </div>
+    </div>
+
     <div class="container mx-auto mt-4">
         {% block content %}
+        <!-- stuff goes here -->
         {% endblock content %}
     </div>
+
+    {% compress js %}
+    <script src="{% static 'JS/swiper-bundle.min.js' %}"></script>
+    <script>
+        // handles theme changes
+        function changeTheme() {
+            const selectedTheme = document.getElementById('themes').value;
+            document.documentElement.setAttribute('data-theme', selectedTheme);
+            localStorage.setItem('selectedTheme', selectedTheme); //stores the current theme so it cna be on other pages
+        }
+
+        // load the saved theme
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedTheme = localStorage.getItem('selectedTheme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themes').value = savedTheme;
+        });
+    </script>
+    {% block extra_js %}
+    <!-- Additional JS can be added here -->
+    {% endblock extra_js %}
+    {% endcompress %}
 </body>
- 
+
 </html>
