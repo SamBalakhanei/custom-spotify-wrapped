@@ -651,16 +651,16 @@ html[data-theme='christmas'] {
   margin-inline-end: 0.5rem;
 }
 
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
 .mt-4 {
   margin-top: 1rem;
 }
 
 .mt-8 {
   margin-top: 2rem;
-}
-
-.mt-2 {
-  margin-top: 0.5rem;
 }
 
 .block {
@@ -772,11 +772,6 @@ html[data-theme='christmas'] {
 
 .border-accent {
   border-color: var(--color-accent);
-}
-
-.border-white {
-  --tw-border-opacity: 1;
-  border-color: rgb(255 255 255 / var(--tw-border-opacity));
 }
 
 .bg-accent {
