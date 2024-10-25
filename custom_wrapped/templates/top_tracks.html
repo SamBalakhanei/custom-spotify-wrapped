@@ -1,40 +1,80 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Top Spotify Tracks</title>
-</head>
-<body>
-    <h1>Your Top Spotify Tracks</h1>
+{% load compress %}
+{% load static %}
 
-    <ul>
-        {% if top_tracks %}
-            {% for track_num, track in top_tracks.items %}
-                <li>
-                    <strong>{{ track_num }}. {{ track.track_name }}</strong><br>
-                    <a href="{{ track.track_url }}">Listen on Spotify</a><br>
-                    Album: <a href="{{ track.album_link }}">{{ track.album_name }}</a><br>
-                    Release Date: {{ track.release_date }}<br>
-                    <img src="{{ track.album_image }}" alt="Album Cover" style="width:100px;"><br>
-                    Artists:
-                    <ul>
-                        {% for artist in track.artists %}
-                            <li><a href="{{ artist.artist_link }}">{{ artist.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                    {% if track.mp3_preview_url %}
-                        <!-- only show mp3 if it exists -->
-                        <audio controls>
-                            <source src="{{ track.mp3_preview_url }}" type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
-                    {% else %}
-                        <p>No preview available for this track.</p>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        {% else %}
-            <p>No tracks found for this period.</p>
-        {% endif %}
-    </ul>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Spotify Wrapped</title>
+
+    {% compress css %}
+    <link rel="stylesheet" href="{% static 'CSS/swiper-bundle.min.css' %}">
+    <link rel="stylesheet" href="{% static 'src/output.css' %}">
+    {% endcompress %}
+</head>
+
+<body class="bg-black font-sans">
+    <div class="container mx-auto mt-4">
+        <strong class="text-4xl text-center font-bold p-10 text-white">Your Top Spotify Tracks</strong>
+
+        <!-- Swiper Container -->
+        <div class="swiper mt-8 max-w-lg mx-auto border-4 border-white rounded-lg">
+            <div class="swiper-wrapper">
+                {% if top_tracks %}
+                    {% for track_num, track in top_tracks.items %}
+                        <!-- Each Slide -->
+                        <div class="swiper-slide">
+                            <div class="p-4 bg-dark-gray text-white">
+                                <img src="{{ track.album_image }}" class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-white" alt="Album Cover">
+                                <div class="mt-4">
+                                    <strong class="text-2xl">{{ track_num }}. {{ track.track_name }}</strong><br>
+                                    <ul>
+                                        {% for artist in track.artists %}
+                                            <li><a href="{{ artist.artist_link }}">{{ artist.name }}</a></li>
+                                        {% endfor %}
+                                    </ul>
+                                    Album: <a href="{{ track.album_link }}">{{ track.album_name }}</a><br>
+                                    Released on: {{ track.release_date }}<br>
+                                    <div class="mt-4 mb-4">
+                                        <a href="{{ track.track_url }}" class="bg-green text-white font-bold py-2 px-4 rounded-full hover:bg-green-600">
+                                            Listen on Spotify
+                                        </a>
+                                    </div>
+                                    {% if track.mp3_preview_url %}
+                                        <audio controls class="w-full bg-gray-800 rounded-lg p-2">
+                                            <source src="{{ track.mp3_preview_url }}" type="audio/mpeg">
+                                            Your browser does not support the audio element.
+                                        </audio>
+
+                                    {% else %}
+                                        <p>No preview available for this track.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-white">No tracks found for this period.</p>
+                {% endif %}
+            </div>
+
+            <!-- Pagination -->
+            <div class="swiper-pagination" style="bottom: 1px;"></div>
+
+            <!-- Navigation buttons -->
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+
+        </div>
+    </div>
+
+    {% compress js %}
+    <script src="{% static 'JS/swiper-bundle.min.js' %}"></script>
+    <script src="{% static 'JS/swiper-init.js' %}"></script>
+    {% endcompress %}
 </body>
+
 </html>
