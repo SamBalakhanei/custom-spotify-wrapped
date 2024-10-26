@@ -689,6 +689,11 @@ video {
   background-color: rgb(29 185 84 / var(--tw-bg-opacity));
 }
 
+.bg-red {
+  --tw-bg-opacity: 1;
+  background-color: red;
+}
+
 .object-scale-down {
   -o-object-fit: scale-down;
      object-fit: scale-down;

@@ -35,6 +35,12 @@ def register(request):
     template_name = 'register.html'
     return render(request, template_name, context)
 
+
+def delete_account(request):
+    user = request.user
+    user.delete()
+    return redirect('index')
+
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)

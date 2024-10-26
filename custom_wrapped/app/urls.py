@@ -17,7 +17,8 @@ urlpatterns = [
     path('get-top-tracks/<int:limit>/<str:period>/', get_top_tracks, name='get_top_tracks'),
     path('top-artists/', show_top_artists, name='top_artists'),
     path('get-top-artists/<int:limit>/<str:period>/', get_top_artists, name='get_top_artists'),
-    path('profile/', views.profile, name='profile')
+    path('profile/', views.profile, name='profile'),
+    path('delete_account/', views.delete_account, name='delete_account')
 
 
 
