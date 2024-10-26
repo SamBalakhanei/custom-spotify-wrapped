@@ -1,14 +1,17 @@
 module.exports = {
   content: [
-      './templates/**/*.html'
+      './templates/**/*.html',
   ],
   theme: {
     colors: {
-      'black': '#191414',
-      'green': '#1DB954',
-      'dark-gray': '#121212',
-      'light-gray': '#B3B3B3',
-      'white': '#FFFFFF',
+      background: 'var(--color-background)',
+      accent: 'var(--color-accent)',
+      text: 'var(--color-text)',
+      backgroundText: 'var(--color-background-text)',
+      darkAccent: 'var(--color-dark-accent)',
+      hover: 'var(--color-hover)',
+      white: '#FFFFFF',
+      green: '#1DB954'
     },
     container: {
       center: true,

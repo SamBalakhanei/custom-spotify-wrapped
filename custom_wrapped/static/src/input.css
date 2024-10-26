@@ -1,3 +1,41 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html[data-theme='dark'] {
+        --color-background: #121212;
+        --color-accent: #1DB954;
+        --color-text: #FFFFFF;
+        --color-background-text: #B3B3B3;
+        --color-dark-accent: #000000;
+        --color-hover: #1F1F1F;
+    }
+
+    html[data-theme='light'] {
+        --color-background: #FFFFFF;
+        --color-accent: #1DB954;
+        --color-text: #272727;
+        --color-background-text: #434343;
+        --color-dark-accent: #026c27;
+        --color-hover: #1F1F1F;
+    }
+
+    html[data-theme='halloween'] {
+        --color-background: #121212;
+        --color-accent: #d08700;
+        --color-text: #FFFFFF;
+        --color-background-text: #B3B3B3;
+        --color-dark-accent: #000000;
+        --color-hover: #1F1F1F;
+    }
+
+    html[data-theme='christmas'] {
+        --color-background: #092e35;
+        --color-accent: #b00909;
+        --color-text: #FFFFFF;
+        --color-background-text: #B3B3B3;
+        --color-dark-accent: #000000;
+        --color-hover: #1F1F1F;
+    }
+}
