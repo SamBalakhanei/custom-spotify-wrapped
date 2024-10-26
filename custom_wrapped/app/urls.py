@@ -3,6 +3,7 @@ from django.urls import path, include
 from . import views
 from .views import show_top_tracks, get_top_tracks
 from .views import show_top_artists, get_top_artists
+from .views import contact_us
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -17,6 +18,7 @@ urlpatterns = [
     path('get-top-tracks/<int:limit>/<str:period>/', get_top_tracks, name='get_top_tracks'),
     path('top-artists/', show_top_artists, name='top_artists'),
     path('get-top-artists/<int:limit>/<str:period>/', get_top_artists, name='get_top_artists'),
+    path('contact-us/', contact_us, name='contact_us'),
 
 
 
