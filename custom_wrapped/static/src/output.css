@@ -787,6 +787,11 @@ html[data-theme='christmas'] {
   background-color: rgb(29 185 84 / var(--tw-bg-opacity));
 }
 
+.bg-red {
+  --tw-bg-opacity: 1;
+  background-color: red;
+}
+
 .object-cover {
   -o-object-fit: cover;
      object-fit: cover;

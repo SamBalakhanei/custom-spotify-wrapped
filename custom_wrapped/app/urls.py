@@ -23,5 +23,4 @@ urlpatterns = [
     path('delete_account/', views.delete_account, name='delete_account'),
 
 
-
 ]
