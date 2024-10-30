@@ -1,6 +1,6 @@
 module.exports = {
   content: [
-      './templates/**/*.html'
+      './templates/**/*.html',
   ],
   theme: {
     colors: {
@@ -10,7 +10,8 @@ module.exports = {
       backgroundText: 'var(--color-background-text)',
       darkAccent: 'var(--color-dark-accent)',
       hover: 'var(--color-hover)',
-      white: '#FFFFFF'
+      white: '#FFFFFF',
+      green: '#1DB954'
     },
     container: {
       center: true,

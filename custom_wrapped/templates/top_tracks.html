@@ -1,40 +1,83 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Top Spotify Tracks</title>
-</head>
-<body>
-    <h1>Your Top Spotify Tracks</h1>
+{% extends "_base.html" %}
+{% load compress %}
+{% load static %}
 
-    <ul>
-        {% if top_tracks %}
-            {% for track_num, track in top_tracks.items %}
-                <li>
-                    <strong>{{ track_num }}. {{ track.track_name }}</strong><br>
-                    <a href="{{ track.track_url }}">Listen on Spotify</a><br>
-                    Album: <a href="{{ track.album_link }}">{{ track.album_name }}</a><br>
-                    Release Date: {{ track.release_date }}<br>
-                    <img src="{{ track.album_image }}" alt="Album Cover" style="width:100px;"><br>
-                    Artists:
-                    <ul>
-                        {% for artist in track.artists %}
-                            <li><a href="{{ artist.artist_link }}">{{ artist.name }}</a></li>
-                        {% endfor %}
-                    </ul>
-                    {% if track.mp3_preview_url %}
-                        <!-- only show mp3 if it exists -->
-                        <audio controls>
-                            <source src="{{ track.mp3_preview_url }}" type="audio/mpeg">
-                            Your browser does not support the audio element.
-                        </audio>
-                    {% else %}
-                        <p>No preview available for this track.</p>
-                    {% endif %}
-                </li>
-            {% endfor %}
-        {% else %}
-            <p>No tracks found for this period.</p>
-        {% endif %}
-    </ul>
-</body>
-</html>
+{% block title %}Your Top Spotify Tracks{% endblock title %}
+
+{% block extra_css %}
+<!-- swiper.js css is already included in _base.html, additional css can be added here if u want -->
+{% endblock extra_css %}
+
+{% block content %}
+    <h1 class="text-4xl text-center font-bold p-10 text-text">Your Top Spotify Tracks</h1>
+
+    <!-- Swiper Container -->
+    <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
+        <div class="swiper-wrapper">
+            {% if top_tracks %}
+                {% for track_num, track in top_tracks.items %}
+                    <!-- Each Slide -->
+                    <div class="swiper-slide">
+                        <div class="p-4 bg-background text-text">
+                            <img src="{{ track.album_image }}" class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent" alt="Album Cover">
+                            <div class="mt-4">
+                                <strong class="text-2xl">{{ track_num }}. {{ track.track_name }}</strong><br>
+                                <ul class="list-disc list-inside mt-2">
+                                    {% for artist in track.artists %}
+                                        <li><a href="{{ artist.artist_link }}" class="text-blue-500 hover:underline">{{ artist.name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                                <p class="mt-2">
+                                    Album: <a href="{{ track.album_link }}" class="text-blue-500 hover:underline">{{ track.album_name }}</a><br>
+                                    Released on: {{ track.release_date }}
+                                </p>
+                                <div class="mt-4 mb-4">
+                                    <a href="{{ track.track_url }}" class="bg-green text-text font-bold py-2 px-4 rounded-full hover:bg-green-600 transition">
+                                        Listen on Spotify
+                                    </a>
+                                </div>
+                                {% if track.mp3_preview_url %}
+                                    <audio controls class="w-full bg-gray-800 rounded-lg p-2">
+                                        <source src="{{ track.mp3_preview_url }}" type="audio/mpeg">
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                {% else %}
+                                    <p>No preview available for this track.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-text">No tracks found for this period.</p>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="swiper-pagination" style="bottom: 1px;"></div>
+
+        <!-- Navigation buttons -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var swiper = new Swiper('.swiper', {
+                loop: true,
+                slidesPerView: 1, // Display one slide at a time
+                spaceBetween: 30, // Space between slides in px
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
+        });
+    </script>
+{% endblock extra_js %}

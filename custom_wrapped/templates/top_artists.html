@@ -1,26 +1,64 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Top Spotify Artists</title>
-</head>
-<body>
-    <h1>Your Top Spotify Artists</h1>
-    <ul>
-        {% if top_artists %}
-            {% for artist_num, artist in top_artists.items %}
-                <li>
-                    <strong>{{ artist_num }}. <a href="{{ artist.artist_url }}">{{ artist.name }}</a></strong><br>
-                    Genres: {{ artist.genres }}<br>
-                    <img src="{{ artist.image_url }}" alt="{{ artist.name }}" style="width:100px;">
-                </li>
-            {% endfor %}
-        {% else %}
-            <p>No artists found for this period.</p>
-        {% endif %}
-    
-    {%  if desc %}
-    <span>{desc}</span>
-    {% endif %}
-    </ul>
-</body>
-</html>
+{% extends "_base.html" %}
+{% load compress %}
+{% load static %}
+
+{% block title %}Your Top Spotify Artists{% endblock title %}
+
+{% block extra_css %}
+<!-- Swiper.js CSS is already included in _base.html -->
+<!-- Additional CSS specific to top_artists can be added here if needed -->
+{% endblock extra_css %}
+
+{% block content %}
+    <h1 class="text-4xl text-center font-bold p-10 text-text">Your Top Spotify Artists</h1>
+
+    <!-- Swiper Container -->
+    <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
+        <div class="swiper-wrapper">
+            {% if top_artists %}
+                {% for artist_num, artist in top_artists.items %}
+                    <!-- Each Slide -->
+                    <div class="swiper-slide">
+                        <div class="p-4 bg-background text-text">
+                            <img src="{{ artist.image_url }}" class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg" alt="{{ artist.name }}">
+                            <div class="mt-4">
+                                <strong class="text-2xl">{{ artist_num }}. <a href="{{ artist.artist_url }}" class="hover:underline">{{ artist.name }}</a></strong><br>
+                                <p class="mt-2">Genres: {{ artist.genres }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-text">No artists found for this period.</p>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="swiper-pagination" style="bottom: 1px;"></div>
+
+        <!-- Navigation buttons -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var swiper = new Swiper('.swiper', {
+                loop: true,
+                slidesPerView: 1, // Display one slide at a time
+                spaceBetween: 30, // Space between slides in px
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
+        });
+    </script>
+{% endblock extra_js %}
+
