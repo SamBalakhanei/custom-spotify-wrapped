@@ -167,6 +167,9 @@ def get_spotify_user_profile(access_token):
 def show_top_tracks(request):
     return render(request, 'top_tracks.html')
 
+def contact_us(request):
+    return render(request, 'contact_us.html')
+
 def get_top_tracks(request, limit, period):
     endpoint = 'https://api.spotify.com/v1/me/top/tracks'
     user = request.user
