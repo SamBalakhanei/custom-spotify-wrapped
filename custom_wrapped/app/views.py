@@ -12,6 +12,9 @@ from django.utils import timezone
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .utils.spotify_utils import process_top_tracks, process_top_artists
+import google.generativeai as genai
+import os
+from collections import Counter
 
 load_dotenv()
 
@@ -19,6 +22,7 @@ CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 REDIRECT_URI = 'http://127.0.0.1:8000/spotify/callback/'
 SCOPES = 'user-top-read user-read-playback-state user-modify-playback-state streaming'
+genai.configure(api_key=os.environ["API_KEY"])
 
 def register(request):
     if request.method == 'POST':
@@ -207,9 +211,10 @@ def get_top_artists(request, limit, period):
 
         # Process the top artists using the utility function
         top_artists = process_top_artists(data)
+        desc = generate_desc(request, top_artists)
 
         # Render the processed data in a template
-        return render(request, 'top_artists.html', {'top_artists': top_artists})
+        return render(request, 'top_artists.html', {'top_artists': top_artists, 'desc': desc})
 
     except Exception as e:
         error_data = {
@@ -218,4 +223,24 @@ def get_top_artists(request, limit, period):
         }
         return JsonResponse(error_data, status=500)
 
+def generate_desc(request, top_artists):
+    model = genai.GenerativeModel("gemini-1.5-flash")
+    # top 5 genres?
+    top_5_genres = get_top_genres(top_artists)
+    response = model.generate_content("Generate me the MBTI, zodiac sign, and favorite drink/coffee order of "
+                                      "someone who listens to: " + top_5_genres + " in the format of " +
+                                    "'People who listen to these genres are...")
+    return "Your top genres are: " + top_5_genres + "." + response
 
+def get_top_genres(top_artists):
+    genres = []
+    for artist_num, artist in top_artists.items:
+        genres.extend(artist.genres)
+
+    genre_counts = Counter(genres)
+    top_5_genres = genre_counts.most_common(5)
+    top_genres_string = ""
+    for item in top_5_genres:
+        top_genres_string += item
+        top_genres_string += ", "
+    return top_genres_string

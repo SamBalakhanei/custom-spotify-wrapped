@@ -17,6 +17,10 @@
         {% else %}
             <p>No artists found for this period.</p>
         {% endif %}
+    
+    {%  if desc %}
+    <span>{desc}</span>
+    {% endif %}
     </ul>
 </body>
 </html>
