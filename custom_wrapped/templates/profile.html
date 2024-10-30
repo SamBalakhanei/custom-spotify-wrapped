@@ -1,23 +1,45 @@
 {% extends "_base.html" %}
  
 {% block content %}
-    <div class="container text-white ">
+    <div class="container text-text ">
         {% if user.is_authenticated %}
             <h1 class="text-4xl text-center font-bold pt-10">This is {{ user.username }}'s profile.</h1>
                 <div class="flex space-x-4 items-center justify-center">
                     <div class="p-10 flex space-x-4 items-center justify-center w-1/2">
                         <a href="{% url 'index' %}" class="flex-1">
-                            <button class="flex flex-col items-center justify-center w-full focus:outline-none text-white bg-green font-medium rounded-lg text-sm px-5 py-2.5">
-                                <p class="text-center">Go Back</p>
+                            <button class="flex flex-col items-center justify-center w-full focus:outline-none text-white bg-accent font-medium rounded-lg text-sm px-5 py-2.5">
+                                <p class="text-center text-white">Go Back</p>
                             </button>
                         </a>
                         <a href="{% url 'delete_account' %}" class="flex-1">
-                            <button class="flex flex-col items-center justify-center w-full focus:outline-none text-white bg-red font-medium rounded-lg text-sm px-5 py-2.5">
+                            <button class="flex flex-col items-center justify-center w-full focus:outline-none text-white font-medium rounded-lg text-sm px-5 py-2.5" style="background-color: red">
                                 <p class="text-center">Delete Account</p>
                             </button>
                         </a>
                     </div>
                 </div>
+            <div name="friends" class="items-center justify-center text-center">
+                <div name="friends-add">
+                    <input type="text" class="h-full border-2 border-accent" style="color: black">
+                    <button class="bg-green rounded-2xl border-2 border-accent px-4 ml-2 text-white">Add</button>
+                </div>
+                <div name="friends-list" class="mt-8 flex-col">
+{#                    {% for friend in user.friends %}#}
+{#                        <p>{% friend.name %}</p>#}
+{#                    {% endfor %}#}
+
+                    <div name="friend" class="flex-row">
+                        <span class="text-text">Friend 1</span>
+                        <button class="bg-green rounded-2xl border-2 border-accent px-4 ml-2 text-white">View Duo-Wrapped</button>
+                        <button class="rounded-2xl px-4 ml-2 text-white" style="background-color: red">X</button>
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
             
         {% else %}
 {#            redirect to login#}
