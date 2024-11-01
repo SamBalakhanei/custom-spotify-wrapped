@@ -1,0 +1,14 @@
+{% extends "_base.html" %}
+{% load compress %}
+{% load static %}
+
+{% block title %}Past Wraps{% endblock title %}
+{%  block content %}
+    <a href="{% url 'index' %}" class="flex-1">
+        <button class="flex flex-col items-center justify-center w-32 focus:outline-none text-text bg-accent font-medium rounded-lg text-sm px-4 py-2">
+            <p class="text-center">Back</p>
+        </button>
+    </a>
+    {% for wrap in wraps %}
+    {% endfor %}
+{% endblock content %}
