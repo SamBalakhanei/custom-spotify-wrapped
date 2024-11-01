@@ -21,6 +21,6 @@ urlpatterns = [
     path('contact-us/', contact_us, name='contact_us'),
     path('profile/', views.profile, name='profile'),
     path('delete_account/', views.delete_account, name='delete_account'),
-
-
+    path('wrap/<int:limit>/<str:period>/', views.show_wrap, name='wrap', ),
+    path('past_wraps/', views.past_wraps, name='pas_wraps', )
 ]

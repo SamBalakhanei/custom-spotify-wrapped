@@ -262,3 +262,12 @@ def get_top_genres(top_artists):
         top_genres_string += item
         top_genres_string += ", "
     return top_genres_string
+
+def show_wrap(request, limit, period):
+    top_tracks = get_top_tracks(request, limit, period)
+    top_artists = get_top_artists(request, limit, period)
+    context = {'top_artists': top_artists, 'top_tracks': top_tracks}
+    return render(request, 'wrap.html', context)
+
+def past_wraps(request):
+    return render(request, 'past_wraps.html')
