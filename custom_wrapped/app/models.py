@@ -22,3 +22,10 @@ class SpotifyToken(models.Model):
         self.access_token = new_access_token
         self.expires_in = timezone.now() + datetime.timedelta(seconds=new_expires_in)
         self.save()
+        
+class Wrapped(models.Model):
+    date_created = models.DateField()
+    time_period = models.CharField(max_length=10, default='')
+    type = models.CharField(max_length=10, default='')
+    data = models.JSONField()
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

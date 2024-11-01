@@ -1,8 +1,7 @@
 from django.urls import path, include
 
 from . import views
-from .views import show_top_tracks, get_top_tracks
-from .views import show_top_artists, get_top_artists
+from .views import show_top_tracks, get_top_tracks, show_top_artists, get_top_artists, get_past_wrappeds
 from .views import contact_us
 
 urlpatterns = [
@@ -18,6 +17,7 @@ urlpatterns = [
     path('get-top-tracks/<int:limit>/<str:period>/', get_top_tracks, name='get_top_tracks'),
     path('top-artists/', show_top_artists, name='top_artists'),
     path('get-top-artists/<int:limit>/<str:period>/', get_top_artists, name='get_top_artists'),
+    path('get-past-wrappeds/', get_past_wrappeds, name='past_wraps'),
     path('contact-us/', contact_us, name='contact_us'),
     path('profile/', views.profile, name='profile'),
     path('delete_account/', views.delete_account, name='delete_account'),
