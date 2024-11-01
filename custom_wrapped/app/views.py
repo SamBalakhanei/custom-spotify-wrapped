@@ -1,3 +1,4 @@
+from datetime import date
 from django.shortcuts import render, redirect
 import urllib.parse
 import os
@@ -6,7 +7,7 @@ import requests
 from django.http import JsonResponse
 from .forms import RegisterForm
 from django.contrib.auth import login, authenticate
-from .models import SpotifyToken
+from .models import SpotifyToken, Wrapped
 import datetime
 from django.utils import timezone
 from django.contrib.auth.forms import AuthenticationForm
@@ -23,6 +24,42 @@ CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 REDIRECT_URI = 'http://127.0.0.1:8000/spotify/callback/'
 SCOPES = 'user-top-read user-read-playback-state user-modify-playback-state streaming'
 genai.configure(api_key=os.environ["API_KEY"])
+
+def save_wrapped(user, time_period, type, data):
+    user = user
+    now = datetime.datetime.now()
+
+    Wrapped.objects.create(
+        user=user,
+        date_created=now,
+        time_period=time_period,
+        type=type,
+        data=data
+    )
+    
+    
+def get_past_wrappeds(request):
+    if request.method == 'GET':
+        user = request.user
+
+        wrapped_objs = Wrapped.objects.all().filter(user=user)
+
+        wrappeds = {}
+        
+        i = 0
+        
+        for wrapped_obj in wrapped_objs:
+            wrapped = {
+                'date_created': wrapped_obj.date_created,
+                'time_period': wrapped_obj.time_period,
+                'type': wrapped_obj.type,
+                'data': wrapped_obj.data,
+            }
+            wrappeds[i] = wrapped
+            i += 1
+
+        return JsonResponse(wrappeds)
+             
 
 def register(request):
     if request.method == 'POST':
@@ -191,10 +228,11 @@ def get_top_tracks(request, limit, period):
 
         response = requests.get(endpoint, headers=headers, params=params)
         data = response.json()
+        top_tracks = process_top_tracks(data)
 
         # Process the top tracks using the utility function
         top_tracks = process_top_tracks(data)
-
+        
         # Render the processed data in a template
         return render(request, 'top_tracks.html', {'top_tracks': top_tracks})
 
@@ -206,6 +244,7 @@ def get_top_tracks(request, limit, period):
         return JsonResponse(error_data, status=500)
 
 def show_top_artists(request):
+    desc = generate_desc(request, top_artists)
     return render(request, 'top_artists.html')
 from .utils.spotify_utils import process_top_artists
 
@@ -226,6 +265,9 @@ def get_top_artists(request, limit, period):
 
         response = requests.get(endpoint, headers=headers, params=params)
         data = response.json()
+        
+        save_wrapped(user, period, "artists", data)
+
 
         # Process the top artists using the utility function
         top_artists = process_top_artists(data)
