@@ -228,7 +228,6 @@ def get_top_tracks(request, limit, period):
 
         response = requests.get(endpoint, headers=headers, params=params)
         data = response.json()
-        top_tracks = process_top_tracks(data)
 
         # Process the top tracks using the utility function
         top_tracks = process_top_tracks(data)
@@ -245,7 +244,6 @@ def get_top_tracks(request, limit, period):
 
 def show_top_artists(request):
     return render(request, 'top_artists.html')
-from .utils.spotify_utils import process_top_artists
 
 def get_top_artists(request, limit, period):
     endpoint = 'https://api.spotify.com/v1/me/top/artists'
