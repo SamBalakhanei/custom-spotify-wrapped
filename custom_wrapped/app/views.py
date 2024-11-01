@@ -232,7 +232,7 @@ def get_top_tracks(request, limit, period):
 
         # Process the top tracks using the utility function
         top_tracks = process_top_tracks(data)
-        
+
         # Render the processed data in a template
         return render(request, 'top_tracks.html', {'top_tracks': top_tracks})
 
@@ -244,7 +244,6 @@ def get_top_tracks(request, limit, period):
         return JsonResponse(error_data, status=500)
 
 def show_top_artists(request):
-    desc = generate_desc(request, top_artists)
     return render(request, 'top_artists.html')
 from .utils.spotify_utils import process_top_artists
 
@@ -265,9 +264,6 @@ def get_top_artists(request, limit, period):
 
         response = requests.get(endpoint, headers=headers, params=params)
         data = response.json()
-        
-        save_wrapped(user, period, "artists", data)
-
 
         # Process the top artists using the utility function
         top_artists = process_top_artists(data)
