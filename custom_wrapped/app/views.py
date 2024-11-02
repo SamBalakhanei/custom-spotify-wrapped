@@ -334,7 +334,7 @@ def create_new_wrapped(request, limit, period):
     
     save_wrapped(request.user, period, wrapped)
     context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"]}
-    return render(request, 'wrap.html', context)
+    return render(request, 'wrapped.html', context)
 
 def past_wraps(request):
     return render(request, 'past_wraps.html')
