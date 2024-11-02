@@ -28,3 +28,10 @@ class Wrapped(models.Model):
     time_period = models.CharField(max_length=10, default='')
     data = models.JSONField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+class Friend(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friend_user')
+    friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friends')
+    status = models.CharField(max_length=10,
+                              choices=[('sent', 'Sent'), ('received', 'Received'), ('accepted', 'Accepted')])
+    created_at = models.DateTimeField(auto_now_add=True)
