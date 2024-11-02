@@ -1,5 +1,5 @@
 from datetime import date
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 import urllib.parse
 import os
 from dotenv import load_dotenv
@@ -16,6 +16,10 @@ from .utils.spotify_utils import process_top_tracks, process_top_artists
 import google.generativeai as genai
 import os
 from collections import Counter
+from .models import Friend
+from django.contrib.auth.models import User
+from django.db.models import Q
+
 
 load_dotenv()
 
@@ -180,15 +184,91 @@ def logout(request):
     return redirect('index')
 
 
-
+@login_required
 def profile(request):
-    user = request.user
-    template_name = 'profile.html'
-    context = {
-        'user': user,
-    }
-    return render(request, template_name, context)
+    # Outgoing requests initiated by the current user
+    outgoing_requests = Friend.objects.filter(user=request.user, status='sent')
 
+    # Incoming requests received by the current user
+    incoming_requests = Friend.objects.filter(friend=request.user, status='sent')
+
+    # Confirmed friends where the current user is either the sender or the recipient
+    friends = Friend.objects.filter(
+        Q(user=request.user, status='accepted') | Q(friend=request.user, status='accepted')
+    )
+
+    context = {
+        'outgoing_requests': outgoing_requests,
+        'incoming_requests': incoming_requests,
+        'friends': friends
+    }
+    return render(request, 'profile.html', context)
+
+
+@login_required
+def send_friend_request(request):
+    if request.method == "POST":
+        # Get the username from the form input
+        username = request.POST.get('username')
+        print(f"Username received: {username}")  # Debugging
+
+        # Check if the user with this username exists
+        friend = get_object_or_404(User, username=username)
+
+        # Check if a friend request already exists to prevent duplicates
+        existing_request = Friend.objects.filter(user=request.user, friend=friend).exists() or \
+                           Friend.objects.filter(user=friend, friend=request.user).exists()
+
+        print(f"Existing request found: {existing_request}")  # Debugging
+
+        if not existing_request:
+            # Create a friend request entry where request.user is the sender and friend is the recipient
+            Friend.objects.create(user=request.user, friend=friend, status='sent')
+            print("Friend request created successfully")  # Debugging
+        else:
+            print("Friend request already exists, not creating another.")  # Debugging
+
+    return redirect('profile')
+
+
+@login_required
+def accept_friend_request(request, friend_id):
+    # Find the friend request sent to the current user
+    friend_request = get_object_or_404(Friend, id=friend_id, friend=request.user, status='sent')
+
+    # Update the friend request to accepted status
+    friend_request.status = 'accepted'
+    friend_request.save()
+
+    return redirect('profile')
+
+
+@login_required
+def deny_friend_request(request, friend_id):
+    # Remove the incoming friend request from the database
+    Friend.objects.filter(id=friend_id, friend=request.user, status='sent').delete()
+    return redirect('profile')
+
+@login_required
+def cancel_friend_request(request, friend_id):
+    # Remove the outgoing friend request from the database
+    Friend.objects.filter(id=friend_id, user=request.user, status='sent').delete()
+    return redirect('profile')
+
+
+@login_required
+def remove_friend(request, friend_id):
+    # Find and delete the friendship from both directions (if it exists)
+    friend_relation = Friend.objects.filter(
+        (Q(user=request.user, friend__id=friend_id) | Q(friend=request.user, user__id=friend_id)),
+        status='accepted'
+    )
+
+    if friend_relation.exists():
+        friend_relation.delete()
+        print("Friend removed successfully")  # Debugging
+
+    return redirect('profile')
 
 
 def get_spotify_user_profile(access_token):
