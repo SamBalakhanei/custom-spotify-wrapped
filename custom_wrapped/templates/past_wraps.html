@@ -9,6 +9,17 @@
             <p class="text-center">Back</p>
         </button>
     </a>
-    {% for wrap in wraps %}
+    
+    {% if past_wraps %}
+    <div class="grid grid-cols-8 gap-4 mt-4">
+    {% for key, wrap in past_wraps.items %}
+         <button class="focus:outline-none bg-accent font-medium rounded-lg text-sm px-4 py-2 my-2 mx-4">
+            <p class="text-center text-text">{{ wrap.date_formatted }}</p>
+        </button>
     {% endfor %}
+    </div>
+    {% else %}
+        <span class="text-text">You have no past wraps.</span>
+    {% endif %}
+    
 {% endblock content %}
