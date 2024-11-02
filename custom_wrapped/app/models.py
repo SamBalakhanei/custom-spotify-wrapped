@@ -26,6 +26,5 @@ class SpotifyToken(models.Model):
 class Wrapped(models.Model):
     date_created = models.DateField()
     time_period = models.CharField(max_length=10, default='')
-    type = models.CharField(max_length=10, default='')
     data = models.JSONField()
     user = models.ForeignKey(User, on_delete=models.CASCADE)

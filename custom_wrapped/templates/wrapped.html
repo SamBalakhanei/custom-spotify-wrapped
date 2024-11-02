@@ -2,16 +2,46 @@
 {% load compress %}
 {% load static %}
 
-{% block title %}Your Top Spotify Tracks{% endblock title %}
+{% block title %}Your Spotify Wraooed{% endblock title %}
 
 {% block extra_css %}
-<!-- swiper.js css is already included in _base.html, additional css can be added here if u want -->
+<!-- Swiper.js CSS is already included in _base.html -->
+<!-- Additional CSS specific to top_artists can be added here if needed -->
 {% endblock extra_css %}
 
 {% block content %}
-    <h1 class="text-4xl text-center font-bold p-10 text-text">Your Top Spotify Tracks</h1>
+    <h1 class="text-4xl text-center font-bold p-10 text-text">Your Top Spotify Artists</h1>
 
-    <!-- Swiper Container -->
+    <!-- Top Artists Container -->
+    <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
+        <div class="swiper-wrapper">
+            {% if top_artists %}
+                {% for artist_num, artist in top_artists.items %}
+                    <!-- Each Slide -->
+                    <div class="swiper-slide">
+                        <div class="p-4 bg-background text-text">
+                            <img src="{{ artist.image_url }}" class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg" alt="{{ artist.name }}">
+                            <div class="mt-4">
+                                <strong class="text-2xl">{{ artist_num }}. <a href="{{ artist.artist_url }}" class="hover:underline">{{ artist.name }}</a></strong><br>
+                                <p class="mt-2">Genres: {{ artist.genres }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="text-center text-text">No artists found for this period.</p>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="swiper-pagination" style="bottom: 1px;"></div>
+
+        <!-- Navigation buttons -->
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+
+    <!-- Top Songs Container -->
     <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
         <div class="swiper-wrapper">
             {% if top_tracks %}
@@ -60,6 +90,7 @@
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
     </div>
+
 {% endblock content %}
 
 {% block extra_js %}
@@ -81,3 +112,4 @@
         });
     </script>
 {% endblock extra_js %}
+

@@ -25,7 +25,7 @@ REDIRECT_URI = 'http://127.0.0.1:8000/spotify/callback/'
 SCOPES = 'user-top-read user-read-playback-state user-modify-playback-state streaming'
 genai.configure(api_key=os.environ["API_KEY"])
 
-def save_wrapped(user, time_period, type, data):
+def save_wrapped(user, time_period, data):
     user = user
     now = datetime.datetime.now()
 
@@ -33,7 +33,6 @@ def save_wrapped(user, time_period, type, data):
         user=user,
         date_created=now,
         time_period=time_period,
-        type=type,
         data=data
     )
     
@@ -52,7 +51,6 @@ def get_past_wrappeds(request):
             wrapped = {
                 'date_created': wrapped_obj.date_created,
                 'time_period': wrapped_obj.time_period,
-                'type': wrapped_obj.type,
                 'data': wrapped_obj.data,
             }
             wrappeds[i] = wrapped
@@ -299,11 +297,44 @@ def get_top_genres(top_artists):
         top_genres_string += ", "
     return top_genres_string
 
-def show_wrap(request, limit, period):
-    top_tracks = get_top_tracks(request, limit, period)
-    top_artists = get_top_artists(request, limit, period)
-    context = {'top_artists': top_artists, 'top_tracks': top_tracks}
-    return render(request, 'wrap.html', context)
+def generate_wrapped(user, limit, period):
+    artist_endpoint = 'https://api.spotify.com/v1/me/top/artists'
+    tracks_endpoint = 'https://api.spotify.com/v1/me/top/tracks'
+
+    token = SpotifyToken.objects.get(user=user)
+    
+    headers = {
+        'Authorization': f'Bearer {token.access_token}',
+    }
+
+    params = {
+        "limit": limit,
+        "time_range": period
+    }
+
+    artists = requests.get(artist_endpoint, headers=headers, params=params)
+    artists_data = artists.json()
+    
+    # Process the top artists using the utility function
+    top_artists = process_top_artists(artists_data)
+    
+    tracks = requests.get(tracks_endpoint, headers=headers, params=params)
+    tracks_data = tracks.json()
+    top_tracks = process_top_tracks(tracks_data)
+
+
+    wrapped = {}
+    wrapped["artists"] = top_artists
+    wrapped["tracks"] = top_tracks
+    
+    return wrapped
+
+def create_new_wrapped(request, limit, period):
+    wrapped = generate_wrapped(request.user, limit, period)
+    
+    save_wrapped(request.user, period, wrapped)
+    context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"]}
+    return render(request, 'wrapped.html', context)
 
 def past_wraps(request):
     return render(request, 'past_wraps.html')
