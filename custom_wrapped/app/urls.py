@@ -19,4 +19,6 @@ urlpatterns = [
     path('contact-us/', contact_us, name='contact_us'),
     path('profile/', views.profile, name='profile'),
     path('delete_account/', views.delete_account, name='delete_account'),
-    path('wrapped/<int:limit>/<str:period>/', views.create_new_wrapped, name='wrapped', ),]
+    path('wrapped/<int:limit>/<str:period>/', views.create_new_wrapped, name='wrapped', ),
+    path('view_wrap/<int:item_id>/', views.view_past_wrap, name="view_wrap")
+]
