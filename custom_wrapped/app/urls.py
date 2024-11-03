@@ -24,4 +24,6 @@ urlpatterns = [
     path('cancel_friend_request/<int:friend_id>/', views.cancel_friend_request, name='cancel_friend_request'),
 path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
     path('delete_account/', views.delete_account, name='delete_account'),
-    path('wrapped/<int:limit>/<str:period>/', views.create_new_wrapped, name='wrapped', ),]
+    path('wrapped/<int:limit>/<str:period>/', views.create_new_wrapped, name='wrapped', ),
+    path('view_wrap/<int:item_id>/', views.view_past_wrap, name="view_wrap")
+]

@@ -16,6 +16,7 @@ from .utils.spotify_utils import process_top_tracks, process_top_artists
 import google.generativeai as genai
 import os
 from collections import Counter
+from django.utils.formats import date_format
 from .models import Friend
 from django.contrib.auth.models import User
 from django.db.models import Q
@@ -32,6 +33,9 @@ genai.configure(api_key=os.environ["API_KEY"])
 def save_wrapped(user, time_period, data):
     user = user
     now = datetime.datetime.now()
+
+    if Wrapped.objects.filter(date_created=now).exists():
+        return
 
     Wrapped.objects.create(
         user=user,
@@ -53,15 +57,19 @@ def get_past_wrappeds(request):
         
         for wrapped_obj in wrapped_objs:
             wrapped = {
+                'id':wrapped_obj.id,
                 'date_created': wrapped_obj.date_created,
+                'date_formatted': date_format(wrapped_obj.date_created),
                 'time_period': wrapped_obj.time_period,
                 'data': wrapped_obj.data,
             }
+            print(wrapped['date_formatted'])
             wrappeds[i] = wrapped
             i += 1
 
-        return JsonResponse(wrappeds)
-             
+        return render(request, 'past_wraps.html', {'past_wraps' : wrappeds})
+
+
 
 def register(request):
     if request.method == 'POST':
@@ -394,6 +402,7 @@ def generate_wrapped(user, limit, period):
 
     artists = requests.get(artist_endpoint, headers=headers, params=params)
     artists_data = artists.json()
+    print(artists_data)
     
     # Process the top artists using the utility function
     top_artists = process_top_artists(artists_data)
@@ -402,19 +411,26 @@ def generate_wrapped(user, limit, period):
     tracks_data = tracks.json()
     top_tracks = process_top_tracks(tracks_data)
 
-
-    wrapped = {}
-    wrapped["artists"] = top_artists
-    wrapped["tracks"] = top_tracks
-    
+    wrapped = {"artists": top_artists, "tracks": top_tracks}
     return wrapped
 
 def create_new_wrapped(request, limit, period):
     wrapped = generate_wrapped(request.user, limit, period)
-    
     save_wrapped(request.user, period, wrapped)
     context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"]}
     return render(request, 'wrapped.html', context)
 
-def past_wraps(request):
-    return render(request, 'past_wraps.html')
+def view_past_wrap(request, item_id):
+    wrapped_obj = Wrapped.objects.get(id=item_id)  # Fetches the object with `id=1`
+    wrapped = {
+        'id': wrapped_obj.id,
+        'date_created': wrapped_obj.date_created,
+        'date_formatted': date_format(wrapped_obj.date_created),
+        'time_period': wrapped_obj.time_period,
+        'data': wrapped_obj.data,
+    }
+    context = {'top_artists': wrapped['data']["artists"], 'top_tracks': wrapped['data']["tracks"]}
+    return render(request, 'view_past_wrap.html', context)
+
+
+
