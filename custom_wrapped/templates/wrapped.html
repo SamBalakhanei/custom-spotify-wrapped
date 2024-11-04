@@ -1,8 +1,9 @@
 {% extends "_base.html" %}
+{% load i18n %}
 {% load compress %}
 {% load static %}
 
-{% block title %}Your Spotify Wraooed{% endblock title %}
+{% block title %}{% trans "Your Spotify Wraooed" %}{% endblock title %}
 
 {% block extra_css %}
 <!-- Swiper.js CSS is already included in _base.html -->
@@ -10,7 +11,7 @@
 {% endblock extra_css %}
 
 {% block content %}
-    <h1 class="text-4xl text-center font-bold p-10 text-text">Your Top Spotify Artists</h1>
+    <h1 class="text-4xl text-center font-bold p-10 text-text">{% trans "Your Top Spotify Artists" %}</h1>
 
     <!-- Top Artists Container -->
     <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
@@ -23,13 +24,13 @@
                             <img src="{{ artist.image_url }}" class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg" alt="{{ artist.name }}">
                             <div class="mt-4">
                                 <strong class="text-2xl">{{ artist_num }}. <a href="{{ artist.artist_url }}" class="hover:underline">{{ artist.name }}</a></strong><br>
-                                <p class="mt-2">Genres: {{ artist.genres }}</p>
+                                <p class="mt-2">{% trans "Genres: " %}{{ artist.genres }}</p>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="text-center text-text">No artists found for this period.</p>
+                <p class="text-center text-text">{% trans "No artists found for this period." %}</p>
             {% endif %}
         </div>
 
@@ -58,28 +59,28 @@
                                     {% endfor %}
                                 </ul>
                                 <p class="mt-2">
-                                    Album: <a href="{{ track.album_link }}" class="text-blue-500 hover:underline">{{ track.album_name }}</a><br>
-                                    Released on: {{ track.release_date }}
+                                    {% trans "Album: " %}<a href="{{ track.album_link }}" class="text-blue-500 hover:underline">{{ track.album_name }}</a><br>
+                                    {% trans "Released on: " %}{{ track.release_date }}
                                 </p>
                                 <div class="mt-4 mb-4">
                                     <a href="{{ track.track_url }}" class="bg-green text-text font-bold py-2 px-4 rounded-full hover:bg-green-600 transition">
-                                        Listen on Spotify
+                                        {% trans "Listen on Spotify" %}
                                     </a>
                                 </div>
                                 {% if track.mp3_preview_url %}
                                     <audio controls class="w-full bg-gray-800 rounded-lg p-2">
                                         <source src="{{ track.mp3_preview_url }}" type="audio/mpeg">
-                                        Your browser does not support the audio element.
+                                        {% trans "Your browser does not support the audio element." %}
                                     </audio>
                                 {% else %}
-                                    <p>No preview available for this track.</p>
+                                    <p>{% trans "No preview available for this track." %}</p>
                                 {% endif %}
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             {% else %}
-                <p class="text-center text-text">No tracks found for this period.</p>
+                <p class="text-center text-text">{% trans "No tracks found for this period." %}</p>
             {% endif %}
         </div>
 

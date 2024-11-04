@@ -1,14 +1,15 @@
+{% load i18n %}
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Register</title>
+    <title>{% trans "Register" %}</title>
 </head>
 <body>
-    <h2>Register</h2>
+    <h2>{% trans "Register" %}</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Register</button>
+        <button type="submit">{% trans "Register" %}</button>
     </form>
 </body>
 </html>

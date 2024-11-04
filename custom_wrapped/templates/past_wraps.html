@@ -1,12 +1,13 @@
 {% extends "_base.html" %}
+{% load i18n %}
 {% load compress %}
 {% load static %}
 
-{% block title %}Past Wraps{% endblock title %}
+{% block title %}{% trans "Past Wraps" %}{% endblock title %}
 {%  block content %}
     <a href="{% url 'index' %}" class="flex-1">
         <button class="flex flex-col items-center justify-center w-32 focus:outline-none text-text bg-accent font-medium rounded-lg text-sm px-4 py-2">
-            <p class="text-center">Back</p>
+            <p class="text-center">{% trans "Back" %}</p>
         </button>
     </a>
     
@@ -21,7 +22,7 @@
     {% endfor %}
     </div>
     {% else %}
-        <span class="text-text">You have no past wraps.</span>
+        <span class="text-text">{% trans "You have no past wraps." %}</span>
     {% endif %}
     
 {% endblock content %}
