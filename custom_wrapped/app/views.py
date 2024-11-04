@@ -7,27 +7,26 @@ import requests
 from django.http import JsonResponse
 from .forms import RegisterForm
 from django.contrib.auth import login, authenticate
-from .models import SpotifyToken, Wrapped
+from .models import SpotifyToken, Wrapped, Friend
 import datetime
 from django.utils import timezone
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .utils.spotify_utils import process_top_tracks, process_top_artists
 import google.generativeai as genai
-import os
 from collections import Counter
 from django.utils.formats import date_format
-from .models import Friend
 from django.contrib.auth.models import User
 from django.db.models import Q
+from .spotify_api import (
+    get_auth_url,
+    exchange_code_for_token,
+    refresh_access_token,
+    get_user_profile,
+    get_top_tracks,
+    get_top_artists
+)
 
-
-load_dotenv()
-
-CLIENT_ID = os.getenv('CLIENT_ID')
-CLIENT_SECRET = os.getenv('CLIENT_SECRET')
-REDIRECT_URI = 'http://127.0.0.1:8000/spotify/callback/'
-SCOPES = 'user-top-read user-read-playback-state user-modify-playback-state streaming'
 genai.configure(api_key=os.environ["API_KEY"])
 
 def save_wrapped(user, time_period, data, desc):
@@ -44,8 +43,8 @@ def save_wrapped(user, time_period, data, desc):
         desc=desc,
         data=data
     )
-    
-    
+
+
 def get_past_wrappeds(request):
     if request.method == 'GET':
         user = request.user
@@ -53,12 +52,12 @@ def get_past_wrappeds(request):
         wrapped_objs = Wrapped.objects.all().filter(user=user)
 
         wrappeds = {}
-        
+
         i = 0
-        
+
         for wrapped_obj in wrapped_objs:
             wrapped = {
-                'id':wrapped_obj.id,
+                'id': wrapped_obj.id,
                 'date_created': wrapped_obj.date_created,
                 'date_formatted': date_format(wrapped_obj.date_created),
                 'time_period': wrapped_obj.time_period,
@@ -68,11 +67,18 @@ def get_past_wrappeds(request):
             wrappeds[i] = wrapped
             i += 1
 
-        return render(request, 'past_wraps.html', {'past_wraps' : wrappeds})
-
+        return render(request, 'past_wraps.html', {'past_wraps': wrappeds})
 
 
 def register(request):
+    """
+    This function allows the user to register for the platform
+
+    If user is making a registration attempt:
+        If the user's information is valid, it will redirect to the home page
+
+    Otherwise, it just sends them to the register page
+    """
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -89,11 +95,23 @@ def register(request):
 
 
 def delete_account(request):
+    """
+    Deletes the account of the user who called the function (request.user)
+    """
     user = request.user
     user.delete()
     return redirect('index')
 
+
 def login_view(request):
+    """
+    This function allows the user to log into the platform
+
+    If user is making a login attempt:
+        If the user's information is valid, it will redirect to the home page
+
+    Otherwise, it just sends them to the login page
+    """
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -113,6 +131,11 @@ def login_view(request):
 
 
 def index(request):
+    """
+    Directs the user to the homepage
+    The user's spotify access token is sent as context
+        If the user hasn't logged in with spotify, the homepage will tell them to
+    """
     access_token = None
     if request.user.is_authenticated:
         try:
@@ -129,38 +152,30 @@ def index(request):
 
 
 @login_required
-def spotify_login(request):
-    spotify_auth_url = "https://accounts.spotify.com/authorize"
-    params = {
-        'client_id': CLIENT_ID,
-        'response_type': 'code',
-        'redirect_uri': REDIRECT_URI,
-        'scope': SCOPES,
-    }
-    url = f"{spotify_auth_url}?{urllib.parse.urlencode(params)}"
-    return redirect(url)
+def spotify_login_view(request):
+    """
+    Redirects the user to Spotify's authorization URL.
+    """
+    auth_url = get_auth_url()
+    return redirect(auth_url)
 
 
 @login_required
 def spotify_callback(request):
+    """
+    Creates an access token for the user when they log in with spotify
+    Assigns the access token to the user
+    """
     code = request.GET.get('code')
 
-    # Spotify token URL
-    token_url = 'https://accounts.spotify.com/api/token'
-    payload = {
-        'grant_type': 'authorization_code',
-        'code': code,
-        'redirect_uri': REDIRECT_URI,
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
-    }
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-    }
-
-    # Make a request to get the access token
-    response = requests.post(token_url, data=payload, headers=headers)
-    token_data = response.json()
+    try:
+        token_data = exchange_code_for_token(code)
+    except requests.exceptions.HTTPError as e:
+        error_data = {
+            "message": "Failed to exchange code for token",
+            "error": str(e)
+        }
+        return JsonResponse(error_data, status=400)
 
     # Calculate the expiration time for the token
     expires_in_seconds = token_data['expires_in']
@@ -172,7 +187,7 @@ def spotify_callback(request):
         user=user,
         defaults={
             'access_token': token_data['access_token'],
-            'refresh_token': token_data['refresh_token'],
+            'refresh_token': token_data.get('refresh_token'),
             'expires_in': expires_at
         }
     )
@@ -180,7 +195,8 @@ def spotify_callback(request):
     if not created:
         # Update the token fields if the object already exists
         spotify_token.access_token = token_data['access_token']
-        spotify_token.refresh_token = token_data['refresh_token']
+        if 'refresh_token' in token_data:
+            spotify_token.refresh_token = token_data['refresh_token']
         spotify_token.expires_in = expires_at
         spotify_token.save()
 
@@ -188,13 +204,22 @@ def spotify_callback(request):
 
 
 @login_required
-def logout(request):
+def logout_view(request):
+    """
+    Allows the user to logout from the platform
+    """
     request.session.flush()
     return redirect('index')
 
 
 @login_required
 def profile(request):
+    """
+    Directs the user to their profile
+    Outgoing requests are outgoing friend requests
+    Incoming requests are the incoming friend requests
+    friends are the friends the user already has added
+    """
     # Outgoing requests initiated by the current user
     outgoing_requests = Friend.objects.filter(user=request.user, status='sent')
 
@@ -216,6 +241,9 @@ def profile(request):
 
 @login_required
 def send_friend_request(request):
+    """
+    If the user sends a friend request, it will only be sent if not already sent/added
+    """
     if request.method == "POST":
         # Get the username from the form input
         username = request.POST.get('username')
@@ -242,6 +270,10 @@ def send_friend_request(request):
 
 @login_required
 def accept_friend_request(request, friend_id):
+    """
+    Allows the user to accept an incoming friend request
+    Sets the friend request status to accepted
+    """
     # Find the friend request sent to the current user
     friend_request = get_object_or_404(Friend, id=friend_id, friend=request.user, status='sent')
 
@@ -254,12 +286,21 @@ def accept_friend_request(request, friend_id):
 
 @login_required
 def deny_friend_request(request, friend_id):
+    """
+    Allows the user to deny an incoming friend request
+    Deletes the request
+    """
     # Remove the incoming friend request from the database
     Friend.objects.filter(id=friend_id, friend=request.user, status='sent').delete()
     return redirect('profile')
 
+
 @login_required
 def cancel_friend_request(request, friend_id):
+    """
+    Allows the user to cancel an outgoing friend request
+    Deletes the request
+    """
     # Remove the outgoing friend request from the database
     Friend.objects.filter(id=friend_id, user=request.user, status='sent').delete()
     return redirect('profile')
@@ -267,6 +308,12 @@ def cancel_friend_request(request, friend_id):
 
 @login_required
 def remove_friend(request, friend_id):
+    """
+    Allows the user to remove an existing friend from their friends list
+    Finds the friend object with status 'accepted' to ensure proper deletion
+    """
+
+
     # Find and delete the friendship from both directions (if it exists)
     friend_relation = Friend.objects.filter(
         (Q(user=request.user, friend__id=friend_id) | Q(friend=request.user, user__id=friend_id)),
@@ -280,48 +327,41 @@ def remove_friend(request, friend_id):
     return redirect('profile')
 
 
-def get_spotify_user_profile(access_token):
-    url = 'https://api.spotify.com/v1/me'
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-    }
-    response = requests.get(url, headers=headers)
-
-    if response.status_code == 200:
-        return response.json()
-    else:
-        return None
-
 def show_top_tracks(request):
     return render(request, 'top_tracks.html')
+
 
 def contact_us(request):
     return render(request, 'contact_us.html')
 
-def get_top_tracks(request, limit, period):
-    endpoint = 'https://api.spotify.com/v1/me/top/tracks'
+
+@login_required
+def get_top_tracks_view(request, limit=10, period='medium_term'):
+    """
+    Fetches and displays the user's top tracks.
+    """
     user = request.user
-    token = SpotifyToken.objects.get(user=user)
-
     try:
-        headers = {
-            'Authorization': f'Bearer {token.access_token}',
-        }
+        spotify_token = SpotifyToken.objects.get(user=user)
+        if spotify_token.is_expired():
+            if spotify_token.refresh_token:
+                token_data = refresh_access_token(spotify_token.refresh_token)
+                spotify_token.access_token = token_data['access_token']
+                if 'refresh_token' in token_data:
+                    spotify_token.refresh_token = token_data['refresh_token']
+                spotify_token.expires_in = timezone.now() + datetime.timedelta(seconds=token_data['expires_in'])
+                spotify_token.save()
+            else:
+                return redirect('spotify_login')
+        access_token = spotify_token.access_token
 
-        params = {
-            "limit": limit,
-            "time_range": period
-        }
-
-        response = requests.get(endpoint, headers=headers, params=params)
-        data = response.json()
-
-        # Process the top tracks using the utility function
+        data = get_top_tracks(access_token, limit, period)
         top_tracks = process_top_tracks(data)
 
-        # Render the processed data in a template
         return render(request, 'top_tracks.html', {'top_tracks': top_tracks})
 
+    except SpotifyToken.DoesNotExist:
+        return redirect('spotify_login')
     except Exception as e:
         error_data = {
             "message": "Operation failed",
@@ -329,31 +369,35 @@ def get_top_tracks(request, limit, period):
         }
         return JsonResponse(error_data, status=500)
 
-def get_top_artists(request, limit, period):
-    endpoint = 'https://api.spotify.com/v1/me/top/artists'
+
+@login_required
+def get_top_artists_view(request, limit=10, period='medium_term'):
+    """
+    Fetches and displays the user's top artists.
+    """
     user = request.user
-    token = SpotifyToken.objects.get(user=user)
-
     try:
-        headers = {
-            'Authorization': f'Bearer {token.access_token}',
-        }
+        spotify_token = SpotifyToken.objects.get(user=user)
+        if spotify_token.is_expired():
+            if spotify_token.refresh_token:
+                token_data = refresh_access_token(spotify_token.refresh_token)
+                spotify_token.access_token = token_data['access_token']
+                if 'refresh_token' in token_data:
+                    spotify_token.refresh_token = token_data['refresh_token']
+                spotify_token.expires_in = timezone.now() + datetime.timedelta(seconds=token_data['expires_in'])
+                spotify_token.save()
+            else:
+                return redirect('spotify_login')
+        access_token = spotify_token.access_token
 
-        params = {
-            "limit": limit,
-            "time_range": period
-        }
-
-        response = requests.get(endpoint, headers=headers, params=params)
-        data = response.json()
-
-        # Process the top artists using the utility function
+        data = get_top_artists(access_token, limit, period)
         top_artists = process_top_artists(data)
         desc = generate_desc(top_artists)
 
-        # Render the processed data in a template
         return render(request, 'top_artists.html', {'top_artists': top_artists, 'desc': desc})
 
+    except SpotifyToken.DoesNotExist:
+        return redirect('spotify_login')
     except Exception as e:
         error_data = {
             "message": "Operation failed",
@@ -361,6 +405,7 @@ def get_top_artists(request, limit, period):
         }
         return JsonResponse(error_data, status=500)
 
+      
 def generate_desc(top_artists):
     """
     Generates a description of a user from their top genres.
@@ -371,6 +416,9 @@ def generate_desc(top_artists):
     Returns:
         string: Description of the user.
     """
+
+def generate_desc(request, top_artists):
+
     model = genai.GenerativeModel("gemini-1.5-flash")
     # top 5 genres:
     top_5_genres = get_top_genres(top_artists)
@@ -379,8 +427,10 @@ def generate_desc(top_artists):
                                       "Start with 'People who listen to these genres are often'. Evaluate all the genres together. Make the sentences flow, and don't use Markdown.")
     return response.text
 
+
 def get_top_genres(top_artists):
     genres = []
+
     for key, artist in top_artists.items():
         if not artist.get('genres') == '':
             genres.append(artist.get('genres'))
@@ -394,43 +444,61 @@ def get_top_genres(top_artists):
 
     return top_genres_string
 
-def generate_wrapped(user, limit, period):
-    artist_endpoint = 'https://api.spotify.com/v1/me/top/artists'
-    tracks_endpoint = 'https://api.spotify.com/v1/me/top/tracks'
 
-    token = SpotifyToken.objects.get(user=user)
-    
-    headers = {
-        'Authorization': f'Bearer {token.access_token}',
-    }
+def generate_wrapped(user, limit=10, period='medium_term'):
+    """
+    Generates a wrapped summary of the user's top artists and tracks.
+    """
+    try:
+        spotify_token = SpotifyToken.objects.get(user=user)
+        if spotify_token.is_expired():
+            if spotify_token.refresh_token:
+                token_data = refresh_access_token(spotify_token.refresh_token)
+                spotify_token.access_token = token_data['access_token']
+                if 'refresh_token' in token_data:
+                    spotify_token.refresh_token = token_data['refresh_token']
+                spotify_token.expires_in = timezone.now() + datetime.timedelta(seconds=token_data['expires_in'])
+                spotify_token.save()
+            else:
+                return None
 
-    params = {
-        "limit": limit,
-        "time_range": period
-    }
+        access_token = spotify_token.access_token
 
-    artists = requests.get(artist_endpoint, headers=headers, params=params)
-    artists_data = artists.json()
-    
-    # Process the top artists using the utility function
-    top_artists = process_top_artists(artists_data)
-    desc = generate_desc(top_artists)
-    
-    tracks = requests.get(tracks_endpoint, headers=headers, params=params)
-    tracks_data = tracks.json()
-    top_tracks = process_top_tracks(tracks_data)
+        artists_data = get_top_artists(access_token, limit, period)
+        top_artists = process_top_artists(artists_data)
+        desc = generate_desc(top_artists)
 
-    wrapped = {"artists": top_artists, "tracks": top_tracks, 'desc':desc}
-    return wrapped
+        tracks_data = get_top_tracks(access_token, limit, period)
+        top_tracks = process_top_tracks(tracks_data)
 
-def create_new_wrapped(request, limit, period):
+        wrapped = {"artists": top_artists, "tracks": top_tracks, 'desc':desc}
+        return wrapped
+
+    except SpotifyToken.DoesNotExist:
+        return None
+    except Exception as e:
+        print(f"Error generating wrapped: {e}")
+        return None
+
+
+def create_new_wrapped(request, limit=10, period='medium_term'):
+    """
+    Creates and saves a new wrapped summary for the user.
+    """
     wrapped = generate_wrapped(request.user, limit, period)
-    save_wrapped(request.user, period, wrapped)
-    context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"], 'desc': wrapped['desc']}
-    return render(request, 'wrapped.html', context)
+    if wrapped:
+        save_wrapped(request.user, period, generate_desc(wrapped["artists"]), wrapped)
+        context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"], 'desc': wrapped['desc']}
+        return render(request, 'wrapped.html', context)
+    else:
+        error_data = {
+            "message": "Failed to generate wrapped summary."
+        }
+        return JsonResponse(error_data, status=500)
+
 
 def view_past_wrap(request, item_id):
-    wrapped_obj = Wrapped.objects.get(id=item_id)  # Fetches the object with `id=1`
+    wrapped_obj = Wrapped.objects.get(id=item_id)  # Fetches the object with the given ID
     wrapped = {
         'id': wrapped_obj.id,
         'date_created': wrapped_obj.date_created,
@@ -446,6 +514,3 @@ def view_past_wrap(request, item_id):
 
     context = {'top_artists': wrapped['data']["artists"], 'top_tracks': wrapped['data']["tracks"], 'desc':wrapped_obj.desc}
     return render(request, 'view_past_wrap.html', context)
-
-
-
