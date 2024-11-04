@@ -30,17 +30,18 @@ REDIRECT_URI = 'http://127.0.0.1:8000/spotify/callback/'
 SCOPES = 'user-top-read user-read-playback-state user-modify-playback-state streaming'
 genai.configure(api_key=os.environ["API_KEY"])
 
-def save_wrapped(user, time_period, data):
+def save_wrapped(user, time_period, data, desc):
     user = user
     now = datetime.datetime.now()
 
-    if Wrapped.objects.filter(date_created=now).exists():
+    if Wrapped.objects.get(user=user, time_period=time_period, date=now):
         return
 
     Wrapped.objects.create(
         user=user,
         date_created=now,
         time_period=time_period,
+        desc=desc,
         data=data
     )
     
@@ -328,9 +329,6 @@ def get_top_tracks(request, limit, period):
         }
         return JsonResponse(error_data, status=500)
 
-def show_top_artists(request):
-    return render(request, 'top_artists.html')
-
 def get_top_artists(request, limit, period):
     endpoint = 'https://api.spotify.com/v1/me/top/artists'
     user = request.user
@@ -351,7 +349,7 @@ def get_top_artists(request, limit, period):
 
         # Process the top artists using the utility function
         top_artists = process_top_artists(data)
-        desc = generate_desc(request, top_artists)
+        desc = generate_desc(top_artists)
 
         # Render the processed data in a template
         return render(request, 'top_artists.html', {'top_artists': top_artists, 'desc': desc})
@@ -363,26 +361,37 @@ def get_top_artists(request, limit, period):
         }
         return JsonResponse(error_data, status=500)
 
-def generate_desc(request, top_artists):
+def generate_desc(top_artists):
+    """
+    Generates a description of a user from their top genres.
+
+    Args:
+        top_artists : top artists the user listens to.
+
+    Returns:
+        string: Description of the user.
+    """
     model = genai.GenerativeModel("gemini-1.5-flash")
-    # top 5 genres?
+    # top 5 genres:
     top_5_genres = get_top_genres(top_artists)
-    response = model.generate_content("Generate me the MBTI, zodiac sign, and favorite drink/coffee order of "
-                                      "someone who listens to: " + top_5_genres + " in the format of " +
-                                    "'People who listen to these genres are...")
-    return "Your top genres are: " + top_5_genres + "." + response
+    response = model.generate_content("In 100 words or under, generate me the MBTI, zodiac sign, favorite drink/coffee, " +
+                                      "and colors describing someone who listens to: " + top_5_genres +
+                                      "Start with 'People who listen to these genres are often'. Evaluate all the genres together. Make the sentences flow, and don't use Markdown.")
+    return response.text
 
 def get_top_genres(top_artists):
     genres = []
-    for artist_num, artist in top_artists.items:
-        genres.extend(artist.genres)
+    for key, artist in top_artists.items():
+        if not artist.get('genres') == '':
+            genres.append(artist.get('genres'))
 
     genre_counts = Counter(genres)
     top_5_genres = genre_counts.most_common(5)
     top_genres_string = ""
     for item in top_5_genres:
-        top_genres_string += item
+        top_genres_string += str(item)
         top_genres_string += ", "
+
     return top_genres_string
 
 def generate_wrapped(user, limit, period):
@@ -402,22 +411,22 @@ def generate_wrapped(user, limit, period):
 
     artists = requests.get(artist_endpoint, headers=headers, params=params)
     artists_data = artists.json()
-    print(artists_data)
     
     # Process the top artists using the utility function
     top_artists = process_top_artists(artists_data)
+    desc = generate_desc(top_artists)
     
     tracks = requests.get(tracks_endpoint, headers=headers, params=params)
     tracks_data = tracks.json()
     top_tracks = process_top_tracks(tracks_data)
 
-    wrapped = {"artists": top_artists, "tracks": top_tracks}
+    wrapped = {"artists": top_artists, "tracks": top_tracks, 'desc':desc}
     return wrapped
 
 def create_new_wrapped(request, limit, period):
     wrapped = generate_wrapped(request.user, limit, period)
     save_wrapped(request.user, period, wrapped)
-    context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"]}
+    context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"], 'desc': wrapped['desc']}
     return render(request, 'wrapped.html', context)
 
 def view_past_wrap(request, item_id):
@@ -427,9 +436,15 @@ def view_past_wrap(request, item_id):
         'date_created': wrapped_obj.date_created,
         'date_formatted': date_format(wrapped_obj.date_created),
         'time_period': wrapped_obj.time_period,
+        'desc': wrapped_obj.desc,
         'data': wrapped_obj.data,
     }
-    context = {'top_artists': wrapped['data']["artists"], 'top_tracks': wrapped['data']["tracks"]}
+
+    if wrapped_obj.desc == '':
+        wrapped_obj.desc = generate_desc(wrapped_obj.data['artists'])
+        wrapped_obj.save()
+
+    context = {'top_artists': wrapped['data']["artists"], 'top_tracks': wrapped['data']["tracks"], 'desc':wrapped_obj.desc}
     return render(request, 'view_past_wrap.html', context)
 
 
