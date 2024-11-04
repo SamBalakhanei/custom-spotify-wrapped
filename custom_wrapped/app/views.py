@@ -71,6 +71,14 @@ def get_past_wrappeds(request):
 
 
 def register(request):
+    """
+    This function allows the user to register for the platform
+
+    If user is making a registration attempt:
+        If the user's information is valid, it will redirect to the home page
+
+    Otherwise, it just sends them to the register page
+    """
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -87,12 +95,23 @@ def register(request):
 
 
 def delete_account(request):
+    """
+    Deletes the account of the user who called the function (request.user)
+    """
     user = request.user
     user.delete()
     return redirect('index')
 
 
 def login_view(request):
+    """
+    This function allows the user to log into the platform
+
+    If user is making a login attempt:
+        If the user's information is valid, it will redirect to the home page
+
+    Otherwise, it just sends them to the login page
+    """
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -112,6 +131,11 @@ def login_view(request):
 
 
 def index(request):
+    """
+    Directs the user to the homepage
+    The user's spotify access token is sent as context
+        If the user hasn't logged in with spotify, the homepage will tell them to
+    """
     access_token = None
     if request.user.is_authenticated:
         try:
@@ -138,6 +162,10 @@ def spotify_login_view(request):
 
 @login_required
 def spotify_callback(request):
+    """
+    Creates an access token for the user when they log in with spotify
+    Assigns the access token to the user
+    """
     code = request.GET.get('code')
 
     try:
@@ -177,12 +205,21 @@ def spotify_callback(request):
 
 @login_required
 def logout_view(request):
+    """
+    Allows the user to logout from the platform
+    """
     request.session.flush()
     return redirect('index')
 
 
 @login_required
 def profile(request):
+    """
+    Directs the user to their profile
+    Outgoing requests are outgoing friend requests
+    Incoming requests are the incoming friend requests
+    friends are the friends the user already has added
+    """
     # Outgoing requests initiated by the current user
     outgoing_requests = Friend.objects.filter(user=request.user, status='sent')
 
@@ -204,6 +241,9 @@ def profile(request):
 
 @login_required
 def send_friend_request(request):
+    """
+    If the user sends a friend request, it will only be sent if not already sent/added
+    """
     if request.method == "POST":
         # Get the username from the form input
         username = request.POST.get('username')
@@ -230,6 +270,10 @@ def send_friend_request(request):
 
 @login_required
 def accept_friend_request(request, friend_id):
+    """
+    Allows the user to accept an incoming friend request
+    Sets the friend request status to accepted
+    """
     # Find the friend request sent to the current user
     friend_request = get_object_or_404(Friend, id=friend_id, friend=request.user, status='sent')
 
@@ -242,6 +286,10 @@ def accept_friend_request(request, friend_id):
 
 @login_required
 def deny_friend_request(request, friend_id):
+    """
+    Allows the user to deny an incoming friend request
+    Deletes the request
+    """
     # Remove the incoming friend request from the database
     Friend.objects.filter(id=friend_id, friend=request.user, status='sent').delete()
     return redirect('profile')
@@ -249,6 +297,10 @@ def deny_friend_request(request, friend_id):
 
 @login_required
 def cancel_friend_request(request, friend_id):
+    """
+    Allows the user to cancel an outgoing friend request
+    Deletes the request
+    """
     # Remove the outgoing friend request from the database
     Friend.objects.filter(id=friend_id, user=request.user, status='sent').delete()
     return redirect('profile')
@@ -256,6 +308,12 @@ def cancel_friend_request(request, friend_id):
 
 @login_required
 def remove_friend(request, friend_id):
+    """
+    Allows the user to remove an existing friend from their friends list
+    Finds the friend object with status 'accepted' to ensure proper deletion
+    """
+
+
     # Find and delete the friendship from both directions (if it exists)
     friend_relation = Friend.objects.filter(
         (Q(user=request.user, friend__id=friend_id) | Q(friend=request.user, user__id=friend_id)),
