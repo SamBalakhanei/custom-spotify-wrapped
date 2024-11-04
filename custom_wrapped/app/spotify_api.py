@@ -19,6 +19,7 @@ SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token'
 SPOTIFY_API_BASE_URL = 'https://api.spotify.com/v1'
 
+
 def get_auth_url():
     """
     Constructs the Spotify authorization URL.
@@ -31,6 +32,7 @@ def get_auth_url():
     }
     url = f"{SPOTIFY_AUTH_URL}?{urlencode(params)}"
     return url
+
 
 def exchange_code_for_token(code):
     """
@@ -53,6 +55,7 @@ def exchange_code_for_token(code):
     else:
         response.raise_for_status()
 
+
 def refresh_access_token(refresh_token):
     """
     Refreshes the access token using the refresh token.
@@ -73,6 +76,7 @@ def refresh_access_token(refresh_token):
     else:
         response.raise_for_status()
 
+
 def get_user_profile(access_token):
     """
     Retrieves the Spotify user profile.
@@ -86,6 +90,7 @@ def get_user_profile(access_token):
         return response.json()
     else:
         response.raise_for_status()
+
 
 def get_top_tracks(access_token, limit=10, time_range='medium_term'):
     """
@@ -104,6 +109,7 @@ def get_top_tracks(access_token, limit=10, time_range='medium_term'):
         return response.json()
     else:
         response.raise_for_status()
+
 
 def get_top_artists(access_token, limit=10, time_range='medium_term'):
     """
