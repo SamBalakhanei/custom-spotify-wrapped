@@ -1,3 +1,4 @@
+{% load i18n %}
 {% load compress %}
 {% load static %}
 
@@ -24,15 +25,30 @@
     <div class="flow-root">
         <div class="w-38 float-right p-2 pr-5">
             <span>
-                <p class="text-text inline-block pr-1">Theme</p>
+                <p class="text-text inline-block pr-1">{% trans "Theme" %}</p>
                 <select id="themes" onchange="changeTheme()" aria-label="Select Theme" class="text-text inline-block px-2 py-1.5 text-gray-700 bg-background border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500">
-                    <option value="dark">Dark</option>
-                    <option value="light">Light</option>
-                    <option value="halloween">Halloween</option>
-                    <option value="christmas">Christmas</option>
+                    <option value="dark">{% trans "Dark" %}</option>
+                    <option value="light">{% trans "Light" %}</option>
+                    <option value="halloween">{% trans "Halloween" %}</option>
+                    <option value="christmas">{% trans "Christmas" %}</option>
                 </select>
             </span>
         </div>
+    </div>
+    
+    <!-- Language Selector -->
+    <div class="w-38 float-right p-2 pr-5">
+        <span>
+            <p class="text-text inline-block pr-1">{% trans "Language" %}</p>
+            <select id="languages" onchange="changeLanguage()" aria-label="Select Language" class="text-text inline-block px-2 py-1.5 text-gray-700 bg-background border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500">
+                {% get_available_languages as LANGUAGES %}
+                {% get_language_info_list for LANGUAGES as languages %}
+                
+                {% for lang in languages %}
+                    <option value="{{ lang.code }}">{{ lang.name_local }}</option>
+                {% endfor %}
+            </select>
+        </span>
     </div>
 
     <div class="container mx-auto mt-4">
@@ -56,7 +72,17 @@
             const savedTheme = localStorage.getItem('selectedTheme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('themes').value = savedTheme;
+            
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
+            document.getElementById('languages').value = savedLanguage;
         });
+        
+        // handles language changes
+        function changeLanguage() {
+            const selectedLanguage = document.getElementById('languages').value;
+            localStorage.setItem('selectedLanguage', selectedLanguage);
+            window.location.href = `/${selectedLanguage}/`;
+        }
     </script>
     {% block extra_js %}
     <!-- Additional JS can be added here -->
