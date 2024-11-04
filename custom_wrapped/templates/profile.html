@@ -35,7 +35,7 @@
                 <div name="friends-add">
                     <form method="POST" action="{% url 'send_friend_request' %}">
                         {% csrf_token %}
-                        <input type="text" name="username" placeholder="Enter username" class="h-full border-2 border-accent" style="color: black">
+                        <input type="text" name="username" placeholder={% trans "Enter username" %} class="h-full border-2 border-accent" style="color: black">
                         <button type="submit" class="bg-green rounded-2xl border-2 border-accent px-4 ml-2 text-white">{% trans "Add" %}</button>
                     </form>
                 </div>
