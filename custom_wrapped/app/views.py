@@ -33,7 +33,7 @@ def save_wrapped(user, time_period, data, desc):
     user = user
     now = datetime.datetime.now()
 
-    if Wrapped.objects.get(user=user, time_period=time_period, date=now):
+    if Wrapped.objects.filter(user=user, time_period=time_period, date=now).exists():
         return
 
     Wrapped.objects.create(
@@ -417,8 +417,6 @@ def generate_desc(top_artists):
         string: Description of the user.
     """
 
-def generate_desc(request, top_artists):
-
     model = genai.GenerativeModel("gemini-1.5-flash")
     # top 5 genres:
     top_5_genres = get_top_genres(top_artists)
@@ -487,7 +485,7 @@ def create_new_wrapped(request, limit=10, period='medium_term'):
     """
     wrapped = generate_wrapped(request.user, limit, period)
     if wrapped:
-        save_wrapped(request.user, period, generate_desc(wrapped["artists"]), wrapped)
+        save_wrapped(request.user, period, wrapped, generate_desc(wrapped["artists"]))
         context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"], 'desc': wrapped['desc']}
         return render(request, 'wrapped.html', context)
     else:
