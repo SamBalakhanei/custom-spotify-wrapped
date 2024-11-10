@@ -24,7 +24,8 @@ from .spotify_api import (
     refresh_access_token,
     get_user_profile,
     get_top_tracks,
-    get_top_artists
+    get_top_artists,
+    get_related_artists
 )
 
 genai.configure(api_key=os.environ["API_KEY"])
@@ -349,8 +350,9 @@ def get_top_tracks_view(request, limit=10, period='medium_term'):
                 return redirect('spotify_login')
         access_token = spotify_token.access_token
 
+        # Retrieve top tracks and pass access_token to process features
         data = get_top_tracks(access_token, limit, period)
-        top_tracks = process_top_tracks(data)
+        top_tracks = process_top_tracks(data, access_token)
 
         return render(request, 'top_tracks.html', {'top_tracks': top_tracks})
 
@@ -385,8 +387,8 @@ def get_top_artists_view(request, limit=10, period='medium_term'):
         access_token = spotify_token.access_token
 
         data = get_top_artists(access_token, limit, period)
-        top_artists = process_top_artists(data)
-        desc = generate_desc(top_artists)
+        top_artists = process_top_artists(data, access_token)
+        desc = generate_desc(request, top_artists)
 
         return render(request, 'top_artists.html', {'top_artists': top_artists, 'desc': desc})
 
@@ -457,12 +459,13 @@ def generate_wrapped(user, limit=10, period='medium_term'):
 
         access_token = spotify_token.access_token
 
+        # Process top artists with access_token
         artists_data = get_top_artists(access_token, limit, period)
-        top_artists = process_top_artists(artists_data)
-        desc = generate_desc(top_artists)
+        top_artists = process_top_artists(artists_data, access_token)
 
+        # Process top tracks as before
         tracks_data = get_top_tracks(access_token, limit, period)
-        top_tracks = process_top_tracks(tracks_data)
+        top_tracks = process_top_tracks(tracks_data, access_token)
 
         wrapped = {"artists": top_artists, "tracks": top_tracks, 'desc':desc}
         return wrapped
@@ -507,3 +510,18 @@ def view_past_wrap(request, item_id):
 
     context = {'top_artists': wrapped['data']["artists"], 'top_tracks': wrapped['data']["tracks"], 'desc':wrapped_obj.desc}
     return render(request, 'view_past_wrap.html', context)
+
+
+def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
+    # profile = get_user_profile(access_token)
+    artists = get_top_artists(profile, limit, period)
+    tracks = get_top_tracks(profile, limit, period)
+
+    wrapped_data = {
+        # "user_info": get_user_profile(access_token),  # if implementing user intro data
+        "top_artists": process_top_artists(artists),
+        "top_tracks": process_top_tracks(tracks),
+        # Add more sections as needed
+    }
+    print(wrapped_data)
+    return render(request, 'your_template_name.html', {'wrapped_data': wrapped_data})

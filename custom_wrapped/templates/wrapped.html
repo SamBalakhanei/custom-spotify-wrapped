@@ -3,102 +3,77 @@
 {% load compress %}
 {% load static %}
 
-{% block title %}{% trans "Your Spotify Wraooed" %}{% endblock title %}
+{% block title %}
+    {% trans "Your Spotify Wrapped" %}
+{% endblock title %}
 
 {% block extra_css %}
-<!-- Swiper.js CSS is already included in _base.html -->
-<!-- Additional CSS specific to top_artists can be added here if needed -->
+    <!-- Swiper.js CSS is already included in _base.html -->
+    <!-- Additional CSS specific to top_artists can be added here if needed -->
 {% endblock extra_css %}
 
 {% block content %}
-    <h1 class="text-4xl text-center font-bold p-10 text-text">{% trans "Your Top Spotify Artists" %}</h1>
+    <h1 class="text-4xl text-center font-bold p-10 text-text">
+        {% trans "Your Top Spotify Artists" %}
+    </h1>
 
-    <p class="text-center text-text">{{ desc }}</p> 
-    <!-- Top Artists Container -->
     <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
         <div class="swiper-wrapper">
+            <!-- Slide 1: Welcome -->
+            <div class="swiper-slide text-center text-text">Welcome to your Spotify Wrapped</div>
+
+            <!-- Slide 2: Introduction to Top Artists -->
+            <div class="swiper-slide text-center text-text">
+                You listened to many different artists but there were 5 that stood out:
+            </div>
+
             {% if top_artists %}
-                {% for artist_num, artist in top_artists.items %}
-                    <!-- Each Slide -->
-                    <div class="swiper-slide">
-                        <div class="p-4 bg-background text-text">
-                            <img src="{{ artist.image_url }}" class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg" alt="{{ artist.name }}">
-                            <div class="mt-4">
-                                <strong class="text-2xl">{{ artist_num }}. <a href="{{ artist.artist_url }}" class="hover:underline">{{ artist.name }}</a></strong><br>
-                                <p class="mt-2">{% trans "Genres: " %}{{ artist.genres }}</p>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
+                <!-- Slides 3-7: Top 5 Artists -->
+                {% include "slides/artist_slide.html" with artist=top_artists.1 number=1 %}
+                {% include "slides/artist_slide.html" with artist=top_artists.2 number=2 %}
+                {% include "slides/artist_slide.html" with artist=top_artists.3 number=3 %}
+                {% include "slides/artist_slide.html" with artist=top_artists.4 number=4 %}
+                {% include "slides/artist_slide.html" with artist=top_artists.5 number=5 %}
             {% else %}
-                <p class="text-center text-text">{% trans "No artists found for this period." %}</p>
+                <!-- No Artists Found -->
+                <div class="swiper-slide">
+                    <p class="text-center text-text">
+                        {% trans "No artists found for this period." %}
+                    </p>
+                </div>
             {% endif %}
-        </div>
 
-        <!-- Pagination -->
-        <div class="swiper-pagination" style="bottom: 1px;"></div>
+            <!-- Slide 8: Introduction to Top Tracks -->
+            <div class="swiper-slide text-center text-text">Now onto your top tracks</div>
 
-        <!-- Navigation buttons -->
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-    </div>
-
-    <!-- Top Songs Container -->
-    <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
-        <div class="swiper-wrapper">
             {% if top_tracks %}
-                {% for track_num, track in top_tracks.items %}
-                    <!-- Each Slide -->
-                    <div class="swiper-slide">
-                        <div class="p-4 bg-background text-text">
-                            <img src="{{ track.album_image }}" class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent" alt="Album Cover">
-                            <div class="mt-4">
-                                <strong class="text-2xl">{{ track_num }}. {{ track.track_name }}</strong><br>
-                                <ul class="list-disc list-inside mt-2">
-                                    {% for artist in track.artists %}
-                                        <li><a href="{{ artist.artist_link }}" class="text-blue-500 hover:underline">{{ artist.name }}</a></li>
-                                    {% endfor %}
-                                </ul>
-                                <p class="mt-2">
-                                    {% trans "Album: " %}<a href="{{ track.album_link }}" class="text-blue-500 hover:underline">{{ track.album_name }}</a><br>
-                                    {% trans "Released on: " %}{{ track.release_date }}
-                                </p>
-                                <div class="mt-4 mb-4">
-                                    <a href="{{ track.track_url }}" class="bg-green text-text font-bold py-2 px-4 rounded-full hover:bg-green-600 transition">
-                                        {% trans "Listen on Spotify" %}
-                                    </a>
-                                </div>
-                                {% if track.mp3_preview_url %}
-                                    <audio controls class="w-full bg-gray-800 rounded-lg p-2">
-                                        <source src="{{ track.mp3_preview_url }}" type="audio/mpeg">
-                                        {% trans "Your browser does not support the audio element." %}
-                                    </audio>
-                                {% else %}
-                                    <p>{% trans "No preview available for this track." %}</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
+                <!-- Slides 9-13: Top 5 Tracks -->
+                {% include "slides/track_slide.html" with track=top_tracks.1 number=1 %}
+                {% include "slides/track_slide.html" with track=top_tracks.2 number=2 %}
+                {% include "slides/track_slide.html" with track=top_tracks.3 number=3 %}
+                {% include "slides/track_slide.html" with track=top_tracks.4 number=4 %}
+                {% include "slides/track_slide.html" with track=top_tracks.5 number=5 %}
             {% else %}
-                <p class="text-center text-text">{% trans "No tracks found for this period." %}</p>
+                <!-- No Tracks Found -->
+                <div class="swiper-slide">
+                    <p class="text-center text-text">
+                        {% trans "No tracks found for this period." %}
+                    </p>
+                </div>
             {% endif %}
         </div>
 
-        <!-- Pagination -->
+        <!-- Pagination and Navigation Buttons -->
         <div class="swiper-pagination" style="bottom: 1px;"></div>
-
-        <!-- Navigation buttons -->
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
     </div>
-
 {% endblock content %}
 
 {% block extra_js %}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var swiper = new Swiper('.swiper', {
+            new Swiper('.swiper', {
                 loop: true,
                 slidesPerView: 1, // Display one slide at a time
                 spaceBetween: 30, // Space between slides in px
@@ -114,4 +89,3 @@
         });
     </script>
 {% endblock extra_js %}
-
