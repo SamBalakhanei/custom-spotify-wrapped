@@ -462,6 +462,7 @@ def generate_wrapped(user, limit=10, period='medium_term'):
         # Process top artists with access_token
         artists_data = get_top_artists(access_token, limit, period)
         top_artists = process_top_artists(artists_data, access_token)
+        desc = generate_desc(top_artists)
 
         # Process top tracks as before
         tracks_data = get_top_tracks(access_token, limit, period)
