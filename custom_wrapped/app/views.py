@@ -30,18 +30,15 @@ from .spotify_api import (
 
 genai.configure(api_key=os.environ["API_KEY"])
 
-
-def save_wrapped(user, time_period, data):
+def save_wrapped(user, time_period, data, desc):
     user = user
     now = datetime.datetime.now()
-
-    if Wrapped.objects.filter(date_created=now).exists():
-        return
 
     Wrapped.objects.create(
         user=user,
         date_created=now,
         time_period=time_period,
+        desc=desc,
         data=data
     )
 
@@ -51,11 +48,9 @@ def get_past_wrappeds(request):
         user = request.user
 
         wrapped_objs = Wrapped.objects.all().filter(user=user)
-
         wrappeds = {}
 
         i = 0
-
         for wrapped_obj in wrapped_objs:
             wrapped = {
                 'id': wrapped_obj.id,
@@ -64,7 +59,6 @@ def get_past_wrappeds(request):
                 'time_period': wrapped_obj.time_period,
                 'data': wrapped_obj.data,
             }
-            print(wrapped['date_formatted'])
             wrappeds[i] = wrapped
             i += 1
 
@@ -72,6 +66,14 @@ def get_past_wrappeds(request):
 
 
 def register(request):
+    """
+    This function allows the user to register for the platform
+
+    If user is making a registration attempt:
+        If the user's information is valid, it will redirect to the home page
+
+    Otherwise, it just sends them to the register page
+    """
     if request.method == 'POST':
         form = RegisterForm(request.POST)
         if form.is_valid():
@@ -88,12 +90,23 @@ def register(request):
 
 
 def delete_account(request):
+    """
+    Deletes the account of the user who called the function (request.user)
+    """
     user = request.user
     user.delete()
     return redirect('index')
 
 
 def login_view(request):
+    """
+    This function allows the user to log into the platform
+
+    If user is making a login attempt:
+        If the user's information is valid, it will redirect to the home page
+
+    Otherwise, it just sends them to the login page
+    """
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -113,6 +126,11 @@ def login_view(request):
 
 
 def index(request):
+    """
+    Directs the user to the homepage
+    The user's spotify access token is sent as context
+        If the user hasn't logged in with spotify, the homepage will tell them to
+    """
     access_token = None
     if request.user.is_authenticated:
         try:
@@ -139,6 +157,10 @@ def spotify_login_view(request):
 
 @login_required
 def spotify_callback(request):
+    """
+    Creates an access token for the user when they log in with spotify
+    Assigns the access token to the user
+    """
     code = request.GET.get('code')
 
     try:
@@ -178,12 +200,21 @@ def spotify_callback(request):
 
 @login_required
 def logout_view(request):
+    """
+    Allows the user to logout from the platform
+    """
     request.session.flush()
     return redirect('index')
 
 
 @login_required
 def profile(request):
+    """
+    Directs the user to their profile
+    Outgoing requests are outgoing friend requests
+    Incoming requests are the incoming friend requests
+    friends are the friends the user already has added
+    """
     # Outgoing requests initiated by the current user
     outgoing_requests = Friend.objects.filter(user=request.user, status='sent')
 
@@ -205,6 +236,9 @@ def profile(request):
 
 @login_required
 def send_friend_request(request):
+    """
+    If the user sends a friend request, it will only be sent if not already sent/added
+    """
     if request.method == "POST":
         # Get the username from the form input
         username = request.POST.get('username')
@@ -231,6 +265,10 @@ def send_friend_request(request):
 
 @login_required
 def accept_friend_request(request, friend_id):
+    """
+    Allows the user to accept an incoming friend request
+    Sets the friend request status to accepted
+    """
     # Find the friend request sent to the current user
     friend_request = get_object_or_404(Friend, id=friend_id, friend=request.user, status='sent')
 
@@ -243,6 +281,10 @@ def accept_friend_request(request, friend_id):
 
 @login_required
 def deny_friend_request(request, friend_id):
+    """
+    Allows the user to deny an incoming friend request
+    Deletes the request
+    """
     # Remove the incoming friend request from the database
     Friend.objects.filter(id=friend_id, friend=request.user, status='sent').delete()
     return redirect('profile')
@@ -250,6 +292,10 @@ def deny_friend_request(request, friend_id):
 
 @login_required
 def cancel_friend_request(request, friend_id):
+    """
+    Allows the user to cancel an outgoing friend request
+    Deletes the request
+    """
     # Remove the outgoing friend request from the database
     Friend.objects.filter(id=friend_id, user=request.user, status='sent').delete()
     return redirect('profile')
@@ -257,6 +303,12 @@ def cancel_friend_request(request, friend_id):
 
 @login_required
 def remove_friend(request, friend_id):
+    """
+    Allows the user to remove an existing friend from their friends list
+    Finds the friend object with status 'accepted' to ensure proper deletion
+    """
+
+
     # Find and delete the friendship from both directions (if it exists)
     friend_relation = Friend.objects.filter(
         (Q(user=request.user, friend__id=friend_id) | Q(friend=request.user, user__id=friend_id)),
@@ -314,10 +366,6 @@ def get_top_tracks_view(request, limit=10, period='medium_term'):
         return JsonResponse(error_data, status=500)
 
 
-def show_top_artists(request):
-    return render(request, 'top_artists.html')
-
-
 @login_required
 def get_top_artists_view(request, limit=10, period='medium_term'):
     """
@@ -353,25 +401,42 @@ def get_top_artists_view(request, limit=10, period='medium_term'):
         }
         return JsonResponse(error_data, status=500)
 
+      
+def generate_desc(top_artists):
+    """
+    Generates a description of a user from their top genres.
 
-def generate_desc(request, top_artists):
+    Args:
+        top_artists : top artists the user listens to.
+
+    Returns:
+        string: Description of the user.
+    """
+
+
     model = genai.GenerativeModel("gemini-1.5-flash")
-    # top 5 genres?
+    # top 5 genres:
     top_5_genres = get_top_genres(top_artists)
-    response = model.generate_content("Generate me the MBTI, zodiac sign, and favorite drink/coffee order of "
-                                      "someone who listens to: " + top_5_genres + " in the format of " +
-                                      "'People who listen to these genres are...")
-    return "Your top genres are: " + top_5_genres + "." + response
+    response = model.generate_content("In 100 words or under, generate me the MBTI, zodiac sign, favorite drink/coffee, " +
+                                      "and colors describing someone who listens to: " + top_5_genres +
+                                      "Start with 'People who listen to these genres are often'. Evaluate all the genres together. Make the sentences flow, and don't use Markdown.")
+    return response.text
 
 
 def get_top_genres(top_artists):
     genres = []
-    for artist_num, artist in top_artists.items():
-        genres.extend(artist.genres)
+
+    for key, artist in top_artists.items():
+        if not artist.get('genres') == '':
+            genres.append(artist.get('genres'))
 
     genre_counts = Counter(genres)
     top_5_genres = genre_counts.most_common(5)
-    top_genres_string = ", ".join([genre for genre, count in top_5_genres])
+    top_genres_string = ""
+    for item in top_5_genres:
+        top_genres_string += str(item)
+        top_genres_string += ", "
+
     return top_genres_string
 
 
@@ -402,7 +467,7 @@ def generate_wrapped(user, limit=10, period='medium_term'):
         tracks_data = get_top_tracks(access_token, limit, period)
         top_tracks = process_top_tracks(tracks_data, access_token)
 
-        wrapped = {"artists": top_artists, "tracks": top_tracks}
+        wrapped = {"artists": top_artists, "tracks": top_tracks, 'desc':desc}
         return wrapped
 
     except SpotifyToken.DoesNotExist:
@@ -418,8 +483,8 @@ def create_new_wrapped(request, limit=10, period='medium_term'):
     """
     wrapped = generate_wrapped(request.user, limit, period)
     if wrapped:
-        save_wrapped(request.user, period, wrapped)
-        context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"]}
+        save_wrapped(request.user, period, wrapped, generate_desc(wrapped["artists"]))
+        context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"], 'desc': wrapped['desc']}
         return render(request, 'wrapped.html', context)
     else:
         error_data = {
@@ -435,9 +500,15 @@ def view_past_wrap(request, item_id):
         'date_created': wrapped_obj.date_created,
         'date_formatted': date_format(wrapped_obj.date_created),
         'time_period': wrapped_obj.time_period,
+        'desc': wrapped_obj.desc,
         'data': wrapped_obj.data,
     }
-    context = {'top_artists': wrapped['data']["artists"], 'top_tracks': wrapped['data']["tracks"]}
+
+    if wrapped_obj.desc == '':
+        wrapped_obj.desc = generate_desc(wrapped_obj.data['artists'])
+        wrapped_obj.save()
+
+    context = {'top_artists': wrapped['data']["artists"], 'top_tracks': wrapped['data']["tracks"], 'desc':wrapped_obj.desc}
     return render(request, 'view_past_wrap.html', context)
 
 

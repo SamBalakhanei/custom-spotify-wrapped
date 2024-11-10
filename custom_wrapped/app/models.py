@@ -27,6 +27,7 @@ class Wrapped(models.Model):
     date_created = models.DateField()
     time_period = models.CharField(max_length=10, default='')
     data = models.JSONField()
+    desc = models.TextField(default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 class Friend(models.Model):
