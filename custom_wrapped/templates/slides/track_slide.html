@@ -1,0 +1,46 @@
+<!-- templates/slides/track_slide.html -->
+{% load i18n %}
+
+<div class="swiper-slide">
+    <div class="p-4 bg-background text-text">
+        <img src="{{ track.album_image }}"
+             class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg"
+             alt="Album Cover">
+        <div class="mt-4">
+            <strong class="text-2xl">{{ number }}. {{ track.track_name }}</strong>
+            <ul class="list-disc list-inside mt-2">
+                {% for artist in track.artists %}
+                    <li>
+                        <a href="{{ artist.artist_link }}" class="text-blue-500 hover:underline">
+                            {{ artist.name }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <p class="mt-2">
+                {% trans "Album: " %}
+                <a href="{{ track.album_link }}" class="text-blue-500 hover:underline">
+                    {{ track.album_name }}
+                </a><br>
+                {% trans "Released on: " %}{{ track.release_date }}<br>
+                {% trans "Popularity: " %}{{ track.popularity }}<br>
+                {% trans "Valence: " %}{{ track.valence }}<br>
+                {% trans "Danceability: " %}{{ track.danceability }}
+            </p>
+            <div class="mt-4 mb-4">
+                <a href="{{ track.track_url }}"
+                   class="bg-green text-text font-bold py-2 px-4 rounded-full hover:bg-green-600 transition">
+                    {% trans "Listen on Spotify" %}
+                </a>
+            </div>
+            {% if track.mp3_preview_url %}
+                <audio controls class="w-full bg-gray-800 rounded-lg p-2">
+                    <source src="{{ track.mp3_preview_url }}" type="audio/mpeg">
+                    {% trans "Your browser does not support the audio element." %}
+                </audio>
+            {% else %}
+                <p>{% trans "No preview available for this track." %}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

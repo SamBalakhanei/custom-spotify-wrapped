@@ -1,0 +1,42 @@
+<!-- templates/slides/artist_slide.html -->
+{% load i18n %}
+
+<div class="swiper-slide">
+    <div class="p-4 bg-background text-text">
+        <img src="{{ artist.image_url }}"
+             class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg"
+             alt="{{ artist.name }}">
+        <div class="mt-4">
+            <strong class="text-2xl">
+                {{ number }}. <a href="{{ artist.artist_url }}" class="hover:underline">
+                    {{ artist.name }}
+                </a>
+            </strong>
+            <p class="mt-2">
+                {% trans "Genres: " %}{{ artist.genres }}
+            </p>
+            <p>
+                {% trans "Popularity Rating: " %}{{ artist.popularity }}
+            </p>
+            <p>
+                {% trans "Number of Followers: " %}{{ artist.followers }}
+            </p>
+            <div class="mt-2">
+                <strong>{% trans "Related Artists:" %}</strong>
+                {% if artist.related_artists %}
+                    <ul class="list-disc list-inside">
+                        {% for related in artist.related_artists %}
+                            <li>
+                                <a href="{{ related.artist_link }}" class="text-blue-500 hover:underline">
+                                    {{ related.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>{% trans "No related artists found." %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
