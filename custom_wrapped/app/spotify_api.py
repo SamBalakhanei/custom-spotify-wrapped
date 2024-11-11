@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from dotenv import load_dotenv
 from django.utils import timezone
 import datetime
+from collections import Counter
 
 # Load environment variables
 load_dotenv()
@@ -19,6 +20,7 @@ SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token'
 SPOTIFY_API_BASE_URL = 'https://api.spotify.com/v1'
 
+
 def get_auth_url():
     """
     Constructs the Spotify authorization URL.
@@ -31,6 +33,7 @@ def get_auth_url():
     }
     url = f"{SPOTIFY_AUTH_URL}?{urlencode(params)}"
     return url
+
 
 def exchange_code_for_token(code):
     """
@@ -52,6 +55,7 @@ def exchange_code_for_token(code):
         return response.json()
     else:
         response.raise_for_status()
+
 
 def refresh_access_token(refresh_token):
     """
@@ -75,7 +79,7 @@ def refresh_access_token(refresh_token):
 
 def get_user_profile(access_token):
     """
-    Retrieves the Spotify user profile.
+    Retrieves the Spotify user profile, including profile picture if available.
     """
     url = f'{SPOTIFY_API_BASE_URL}/me'
     headers = {
@@ -83,9 +87,20 @@ def get_user_profile(access_token):
     }
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
-        return response.json()
+        profile_data = response.json()
+
+        # Safely get the profile picture URL
+        profile_picture_url = profile_data.get('images', [{}])[0].get('url', '') if profile_data.get('images') else ''
+
+        return {
+            'id': profile_data.get('id'),
+            'display_name': profile_data.get('display_name'),
+            'profile_picture': profile_picture_url  # Use the extracted profile picture URL
+        }
     else:
         response.raise_for_status()
+
+
 
 def get_top_tracks(access_token, limit=10, time_range='medium_term'):
     """
@@ -105,6 +120,7 @@ def get_top_tracks(access_token, limit=10, time_range='medium_term'):
     else:
         response.raise_for_status()
 
+
 def get_top_artists(access_token, limit=10, time_range='medium_term'):
     """
     Retrieves the user's top artists.
@@ -120,5 +136,79 @@ def get_top_artists(access_token, limit=10, time_range='medium_term'):
     response = requests.get(url, headers=headers, params=params)
     if response.status_code == 200:
         return response.json()
+    else:
+        response.raise_for_status()
+
+
+def get_track_features(access_token, track_id):
+    url = f'{SPOTIFY_API_BASE_URL}/audio-features/{track_id}'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        response.raise_for_status()
+
+
+def get_related_artists(access_token, artist_id, limit=5):
+    """
+    Retrieves related artists for a given artist ID.
+
+    Args:
+        access_token (str): Spotify API access token.
+        artist_id (str): Spotify artist ID.
+        limit (int): Number of related artists to retrieve.
+
+    Returns:
+        list: A list of related artists with their names and Spotify URLs.
+    """
+    url = f'{SPOTIFY_API_BASE_URL}/artists/{artist_id}/related-artists'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        related_artists = data.get('artists', [])[:limit]
+        return [
+            {
+                'name': artist['name'],
+                'artist_link': artist['external_urls']['spotify']
+            }
+            for artist in related_artists
+        ]
+    else:
+        response.raise_for_status()
+
+
+def get_user_top_genre(access_token, limit=10, period='medium_term'):
+    """
+    Retrieves the top genre from the user's top artists.
+    """
+    url = f'{SPOTIFY_API_BASE_URL}/me/top/artists'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+    params = {
+        'limit': limit,
+        'time_range': period
+    }
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        artists_data = response.json()
+
+        # Collect genres from all top artists
+        genres = []
+        for artist in artists_data.get("items", []):
+            genres.extend(artist.get("genres", []))
+
+        # Determine the most common genre
+        if genres:
+            top_genre = Counter(genres).most_common(1)[0][0]
+            return top_genre
+        else:
+            return "Unknown Genre"
     else:
         response.raise_for_status()

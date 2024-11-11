@@ -1,0 +1,242 @@
+# SIMPLIFIED CHINESE TRANSLATIONS.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-11-03 12:45-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+#: custom_wrapped/settings.py:124
+msgid "English"
+msgstr ""
+
+#: custom_wrapped/settings.py:125
+msgid "Spanish"
+msgstr ""
+
+#: custom_wrapped/settings.py:126
+msgid "Simplified Chinese"
+msgstr ""
+
+#: templates/_base.html:28
+msgid "Theme"
+msgstr ""
+
+#: templates/_base.html:30
+msgid "Dark"
+msgstr ""
+
+#: templates/_base.html:31
+msgid "Light"
+msgstr ""
+
+#: templates/_base.html:32
+msgid "Halloween"
+msgstr ""
+
+#: templates/_base.html:33
+msgid "Christmas"
+msgstr ""
+
+#: templates/contact_us.html:6 templates/contact_us.html:9
+#: templates/index.html:98
+msgid "Contact Us"
+msgstr ""
+
+#: templates/contact_us.html:10
+msgid "Meet Our Developers!"
+msgstr ""
+
+#: templates/contact_us.html:13 templates/contact_us.html:19
+#: templates/contact_us.html:22
+msgid "Full-Stack"
+msgstr ""
+
+#: templates/contact_us.html:16 templates/contact_us.html:25
+msgid "Backend"
+msgstr ""
+
+#: templates/contact_us.html:26
+msgid "Send Us Feedback:"
+msgstr ""
+
+#: templates/index.html:4
+msgid "Home - Spotify Wrapped"
+msgstr ""
+
+#: templates/index.html:8
+msgid "Welcome to Spotify Wrapped, "
+msgstr ""
+
+#: templates/index.html:9 templates/index.html:69
+msgid "Generate customized summaries of your Spotify listening history."
+msgstr ""
+
+#: templates/index.html:20
+msgid "Logout"
+msgstr ""
+
+#: templates/index.html:30
+msgid "Get Wrapped"
+msgstr ""
+
+#: templates/index.html:41 templates/past_wraps.html:6
+msgid "Past Wraps"
+msgstr ""
+
+#: templates/index.html:50
+msgid "Profile"
+msgstr ""
+
+#: templates/index.html:61
+msgid "Login with Spotify"
+msgstr ""
+
+#: templates/index.html:68
+msgid "Welcome to Spotify Wrapped."
+msgstr ""
+
+#: templates/index.html:78 templates/register.html:5 templates/register.html:8
+#: templates/register.html:12
+msgid "Register"
+msgstr ""
+
+#: templates/index.html:88 templates/login.html:5 templates/login.html:8
+#: templates/login.html:12
+msgid "Login"
+msgstr ""
+
+#: templates/past_wraps.html:10
+msgid "Back"
+msgstr ""
+
+#: templates/past_wraps.html:25
+msgid "You have no past wraps."
+msgstr ""
+
+#: templates/profile.html:7
+msgid "This is "
+msgstr ""
+
+#: templates/profile.html:7
+msgid "'s profile."
+msgstr ""
+
+#: templates/profile.html:12
+msgid "Go Back"
+msgstr ""
+
+#: templates/profile.html:20
+msgid "Past Wrappeds"
+msgstr ""
+
+#: templates/profile.html:25
+msgid "Delete Account"
+msgstr ""
+
+#: templates/profile.html:38
+msgid "Enter username"
+msgstr ""
+
+#: templates/profile.html:39
+msgid "Add"
+msgstr ""
+
+#: templates/profile.html:45
+msgid "Outgoing Requests"
+msgstr ""
+
+#: templates/profile.html:50
+msgid "Cancel"
+msgstr ""
+
+#: templates/profile.html:53
+msgid "No outgoing requests"
+msgstr ""
+
+#: templates/profile.html:60
+msgid "Incoming Requests"
+msgstr ""
+
+#: templates/profile.html:65
+msgid "Accept"
+msgstr ""
+
+#: templates/profile.html:66
+msgid "Deny"
+msgstr ""
+
+#: templates/profile.html:69
+msgid "No incoming requests"
+msgstr ""
+
+#: templates/profile.html:76
+msgid "Friends"
+msgstr ""
+
+#: templates/profile.html:83 templates/profile.html:94
+msgid "View Duo-Wrapped"
+msgstr ""
+
+#: templates/profile.html:103
+msgid "No friends"
+msgstr ""
+
+#: templates/profile.html:110
+msgid "You need to log in to view your profile."
+msgstr ""
+
+#: templates/view_past_wrap.html:6
+msgid "Your Spotify Wrappeded"
+msgstr ""
+
+#: templates/view_past_wrap.html:14 templates/wrapped.html:14
+msgid "Your Top Spotify Artists"
+msgstr ""
+
+#: templates/view_past_wrap.html:27 templates/wrapped.html:27
+msgid "Genres: "
+msgstr ""
+
+#: templates/view_past_wrap.html:33 templates/wrapped.html:33
+msgid "No artists found for this period."
+msgstr ""
+
+#: templates/view_past_wrap.html:62 templates/wrapped.html:62
+msgid "Album: "
+msgstr ""
+
+#: templates/view_past_wrap.html:63 templates/wrapped.html:63
+msgid "Released on: "
+msgstr ""
+
+#: templates/view_past_wrap.html:67 templates/wrapped.html:67
+msgid "Listen on Spotify"
+msgstr ""
+
+#: templates/view_past_wrap.html:73 templates/wrapped.html:73
+msgid "Your browser does not support the audio element."
+msgstr ""
+
+#: templates/view_past_wrap.html:76 templates/wrapped.html:76
+msgid "No preview available for this track."
+msgstr ""
+
+#: templates/view_past_wrap.html:83 templates/wrapped.html:83
+msgid "No tracks found for this period."
+msgstr ""
+
+#: templates/wrapped.html:6
+msgid "Your Spotify Wraooed"
+msgstr ""
