@@ -52,13 +52,14 @@ def get_past_wrappeds(request):
         wrappeds = {}
 
         i = 0
+
         for wrapped_obj in wrapped_objs:
             wrapped = {
                 'id': wrapped_obj.id,
                 'date_created': wrapped_obj.date_created,
                 'date_formatted': date_format(wrapped_obj.date_created),
                 'time_period': wrapped_obj.time_period,
-                'data': wrapped_obj.data,
+                'image_url': wrapped_obj.data['tracks'].get('1')['album_image']
             }
             wrappeds[i] = wrapped
             i += 1
@@ -420,7 +421,7 @@ def generate_desc(top_artists):
     top_5_genres = get_top_genres(top_artists)
     response = model.generate_content("In 100 words or under, generate me the MBTI, zodiac sign, favorite drink/coffee, " +
                                       "and colors describing someone who listens to: " + top_5_genres +
-                                      "Start with 'People who listen to these genres are often'. Evaluate all the genres together. Make the sentences flow, and don't use Markdown.")
+                                      "Start with 'People who listen to these genres are often'. Evaluate all the genres together. Make the sentences flow, and don't use Markdown or add asterisks.")
     return response.text
 
 
@@ -525,6 +526,14 @@ def view_past_wrap(request, item_id):
     return render(request, 'view_past_wrap.html', context)
 
 
+def delete_wrapped(request, item_id):
+    Wrapped.objects.get(id=item_id).delete()
+
+
+    return get_past_wrappeds(request)
+
+
+
 def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
     # profile = get_user_profile(access_token)
     artists = get_top_artists(profile, limit, period)
@@ -538,3 +547,4 @@ def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
     }
     print(wrapped_data)
     return render(request, 'your_template_name.html', {'wrapped_data': wrapped_data})
+

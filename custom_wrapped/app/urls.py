@@ -45,4 +45,5 @@ urlpatterns = [
 
     # Account Management URL
     path('delete_account/', views.delete_account, name='delete_account'),
+    path('delete_wrapped/<int:item_id>/', views.delete_wrapped, name='delete_wrapped')
 ]
