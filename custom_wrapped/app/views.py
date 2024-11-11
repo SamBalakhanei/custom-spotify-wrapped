@@ -35,6 +35,9 @@ def save_wrapped(user, time_period, data, desc):
     user = user
     now = datetime.datetime.now()
 
+    if Wrapped.objects.filter(date_created=now, time_period=time_period, user=user).exists():
+        return
+
     Wrapped.objects.create(
         user=user,
         date_created=now,
