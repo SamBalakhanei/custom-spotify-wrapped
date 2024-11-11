@@ -61,6 +61,52 @@
                     </p>
                 </div>
             {% endif %}
+        
+            <!-- New Slide for Gemini-generated Summary -->
+            <div class="swiper-slide text-center text-text">
+                <div class="p-4">
+                    <h2 class="text-2xl font-bold mb-4">Personalized Summary</h2>
+                    <p class="text-lg">{{ gemini_summary }}</p>
+                </div>
+            </div>
+
+            <!-- Slide 14: Final Summary Slide -->
+            <div class="swiper-slide text-center text-text">
+                <div class="p-4">
+                    <h2 class="text-3xl font-bold mb-4">Summary of Your Spotify Wrapped</h2> <!-- Larger title text -->
+
+                    <!-- Profile Picture -->
+                    {% if user_profile.profile_picture %}
+                        <img src="{{ user_profile.profile_picture }}" alt="User Profile Picture"
+                             class="w-32 h-32 mx-auto rounded-full mt-4">
+                    {% else %}
+                        <strong>No profile picture available.</strong>
+                    {% endif %}
+
+                    <!-- Top 10 Artists -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-2">Top 10 Artists</h3> <!-- Larger heading for artists -->
+                    <ol class="list-decimal list-inside text-lg">
+                        {% for artist in top_artists.values %}
+                            <li><a href="{{ artist.artist_link }}"
+                                   class="text-blue-500 hover:underline">{{ artist.name }}</a></li>
+                        {% endfor %}
+                    </ol>
+
+                    <!-- Top 10 Tracks -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-2">Top 10 Tracks</h3> <!-- Larger heading for tracks -->
+                    <ol class="list-decimal list-inside text-lg">
+                        {% for track in top_tracks.values %}
+                            <li><a href="{{ track.track_url }}"
+                                   class="text-blue-500 hover:underline">{{ track.track_name }}</a></li>
+                        {% endfor %}
+                    </ol>
+
+                    <!-- Top Genre -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-2">Top Genre</h3> <!-- Larger heading for genre -->
+                    <p class="text-lg">{{ top_genre }}</p> <!-- Larger text for genre -->
+                </div>
+            </div>
+
         </div>
 
         <!-- Pagination and Navigation Buttons -->

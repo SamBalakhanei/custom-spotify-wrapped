@@ -25,7 +25,9 @@
                 {% trans "Released on: " %}{{ track.release_date }}<br>
                 {% trans "Popularity: " %}{{ track.popularity }}<br>
                 {% trans "Valence: " %}{{ track.valence }}<br>
-                {% trans "Danceability: " %}{{ track.danceability }}
+                {% trans "Danceability: " %}{{ track.danceability }}<br>
+                {% trans "Tagline: " %}{{ track.tagline }}
+                
             </p>
             <div class="mt-4 mb-4">
                 <a href="{{ track.track_url }}"

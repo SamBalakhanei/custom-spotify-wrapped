@@ -2,6 +2,16 @@
 
 from app.spotify_api import get_track_features, get_related_artists
 
+def generate_popularity_tagline(popularity, rank):
+    if 90 <= popularity <= 100:
+        return f"#{rank} in your playlist, and it’s trending worldwide!"
+    elif 70 <= popularity <= 89:
+        return f"#{rank} in your playlist, and still very popular globally!"
+    elif 50 <= popularity <= 69:
+        return f"Your #{rank}, but a hidden gem on Spotify!"
+    else:
+        return f"Your favorite, but not everyone knows this track yet."
+
 
 def process_top_tracks(data, access_token):
     top_tracks = {}
@@ -26,6 +36,10 @@ def process_top_tracks(data, access_token):
                 "artist_link": artist.get("href", "#")
             })
 
+        # Generate the tagline based on popularity and rank
+        popularity = datum.get("popularity", 0)
+        tagline = generate_popularity_tagline(popularity, num_tracks)
+
         top_tracks[num_tracks] = {
             "track_name": datum.get("name", "Unknown Track"),
             "mp3_preview_url": datum.get("preview_url"),
@@ -36,13 +50,15 @@ def process_top_tracks(data, access_token):
             "album_link": datum.get("album", {}).get("external_urls", {}).get("spotify", "#"),
             "album_image": datum.get("album", {}).get("images", [{}])[0].get("url", ""),
             "release_date": datum.get("album", {}).get("release_date", "Unknown Date"),
-            "popularity": datum.get("popularity", 0),
+            "popularity": popularity,
             "valence": features.get("valence"),
             "danceability": features.get("danceability"),
+            "tagline": tagline  # Add the tagline here
         }
         num_tracks += 1
 
     return top_tracks
+
 
 
 def process_top_artists(data, access_token, related_limit=5):
@@ -73,3 +89,4 @@ def process_top_artists(data, access_token, related_limit=5):
         num_artists += 1
 
     return top_artists
+
