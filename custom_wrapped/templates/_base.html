@@ -15,54 +15,55 @@
     <script src="{% static 'JS/particles-init.js' %}"></script>
 
     {% compress css %}
-    <link rel="stylesheet" href="{% static 'CSS/swiper-bundle.min.css' %}">
-    <link rel="stylesheet" href="{% static 'src/output.css' %}">
-    {% block extra_css %}
-    <!-- Additional CSS can be added by child templates here -->
-    {% endblock extra_css %}
+        <link rel="stylesheet" href="{% static 'CSS/swiper-bundle.min.css' %}">
+        <link rel="stylesheet" href="{% static 'src/output.css' %}">
+        {% block extra_css %}
+            <!-- Additional CSS can be added by child templates here -->
+        {% endblock extra_css %}
     {% endcompress %}
 </head>
 
 <body class="bg-background font-sans">
-    <div id="particles-js" style="width: 100%; height: 100vh; position: absolute; z-index:-1"></div>
-
+  <div id="particles-js" style="width: 100%; height: 100vh; position: absolute; z-index:-1"></div>
     <!-- Theme Selector -->
     <div class="flow-root">
         <div class="w-38 float-right p-2 pr-5">
             <span>
                 <p class="text-text inline-block pr-1">{% trans "Theme" %}</p>
-                <select id="themes" onchange="changeTheme()" aria-label="Select Theme" class="text-text inline-block px-2 py-1.5 text-gray-700 bg-background border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500">
+                <select id="themes" onchange="changeTheme()" aria-label="Select Theme"
+                        class="text-text inline-block px-2 py-1.5 text-gray-700 bg-background border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500">
                     <option value="dark">{% trans "Dark" %}</option>
                     <option value="light">{% trans "Light" %}</option>
                     <option value="halloween">{% trans "Halloween" %}</option>
                     <option value="christmas">{% trans "Christmas" %}</option>
                 </select>
             </span>
-        </div>
     </div>
-    
-    <!-- Language Selector -->
-    <div class="w-38 float-right p-2 pr-5">
+</div>
+
+<!-- Language Selector -->
+<div class="w-38 float-right p-2 pr-5">
         <span>
             <p class="text-text inline-block pr-1">{% trans "Language" %}</p>
-            <select id="languages" onchange="changeLanguage()" aria-label="Select Language" class="text-text inline-block px-2 py-1.5 text-gray-700 bg-background border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500">
+            <select id="languages" onchange="changeLanguage()" aria-label="Select Language"
+                    class="text-text inline-block px-2 py-1.5 text-gray-700 bg-background border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-300 focus:border-blue-500">
                 {% get_available_languages as LANGUAGES %}
                 {% get_language_info_list for LANGUAGES as languages %}
-                
+
                 {% for lang in languages %}
                     <option value="{{ lang.code }}">{{ lang.name_local }}</option>
                 {% endfor %}
             </select>
         </span>
-    </div>
+</div>
 
-    <div class="container mx-auto mt-4">
-        {% block content %}
+<div class="container mx-auto mt-4">
+    {% block content %}
         <!-- stuff goes here -->
-        {% endblock content %}
-    </div>
+    {% endblock content %}
+</div>
 
-    {% compress js %}
+{% compress js %}
     <script src="{% static 'JS/swiper-bundle.min.js' %}"></script>
     <script>
         // handles theme changes
@@ -77,11 +78,11 @@
             const savedTheme = localStorage.getItem('selectedTheme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             document.getElementById('themes').value = savedTheme;
-            
+
             const savedLanguage = localStorage.getItem('selectedLanguage') || 'en';
             document.getElementById('languages').value = savedLanguage;
         });
-        
+
         // handles language changes
         function changeLanguage() {
             const selectedLanguage = document.getElementById('languages').value;
@@ -90,9 +91,9 @@
         }
     </script>
     {% block extra_js %}
-    <!-- Additional JS can be added here -->
+        <!-- Additional JS can be added here -->
     {% endblock extra_js %}
-    {% endcompress %}
+{% endcompress %}
 </body>
 
 </html>

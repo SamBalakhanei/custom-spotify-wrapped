@@ -1,29 +1,48 @@
-from django.urls import path, include
+# urls.py
 
+from django.urls import path, include
 from . import views
-from .views import get_top_tracks, get_top_artists, get_past_wrappeds
-from .views import contact_us
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('spotify/login/', views.spotify_login, name='spotify_login'),
+
+    # Authentication URLs
     path('register/', views.register, name='register'),
     path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),  # Updated view name
+
+    # Spotify Authentication URLs
+    path('spotify/login/', views.spotify_login_view, name='spotify_login'),  # Updated view name
     path('spotify/callback/', views.spotify_callback, name='spotify_callback'),
-    path('logout/', views.logout, name='logout'),
-    path('spotify/get_top_tracks/<int:limit>/<str:period>/', views.get_top_tracks, name='spotify_get_top_tracks'),
-    path('spotify/get_top_artists/<int:limit>/<str:period>/', views.get_top_artists, name='spotify_get_top_artists'),
-    path('get-top-tracks/<int:limit>/<str:period>/', get_top_tracks, name='get_top_tracks'),
-    path('get-top-artists/<int:limit>/<str:period>/', get_top_artists, name='get_top_artists'),
-    path('get-past-wrappeds/', get_past_wrappeds, name='past_wraps'),
-    path('contact-us/', contact_us, name='contact_us'),
+
+    # Spotify Data Retrieval URLs
+    path('spotify/get_top_tracks/<int:limit>/<str:period>/', views.get_top_tracks_view, name='spotify_get_top_tracks'),
+    # Updated view name
+    path('spotify/get_top_artists/<int:limit>/<str:period>/', views.get_top_artists_view,
+         name='spotify_get_top_artists'),  # Updated view name
+
+    # General Data Retrieval URLs
+    path('get-top-tracks/<int:limit>/<str:period>/', views.get_top_tracks_view, name='get_top_tracks'),
+    # Updated view name
+    path('get-top-artists/<int:limit>/<str:period>/', views.get_top_artists_view, name='get_top_artists'),
+    # Updated view name
+
+    # Wrapped Data URLs
+    path('wrapped/<int:limit>/<str:period>/', views.create_new_wrapped, name='wrapped'),
+    path('view_wrap/<int:item_id>/', views.view_past_wrap, name='view_wrap'),
+    path('get-past-wrappeds/', views.get_past_wrappeds, name='past_wraps'),
+
+    # Contact and Profile URLs
+    path('contact-us/', views.contact_us, name='contact_us'),
     path('profile/', views.profile, name='profile'),
+
+    # Friend Management URLs
     path('send_friend_request/', views.send_friend_request, name='send_friend_request'),
     path('accept_friend_request/<int:friend_id>/', views.accept_friend_request, name='accept_friend_request'),
     path('deny_friend_request/<int:friend_id>/', views.deny_friend_request, name='deny_friend_request'),
     path('cancel_friend_request/<int:friend_id>/', views.cancel_friend_request, name='cancel_friend_request'),
-path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
+    path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
+
+    # Account Management URL
     path('delete_account/', views.delete_account, name='delete_account'),
-    path('wrapped/<int:limit>/<str:period>/', views.create_new_wrapped, name='wrapped', ),
-    path('view_wrap/<int:item_id>/', views.view_past_wrap, name="view_wrap")
 ]
