@@ -11,6 +11,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Custom Spotify Wrapped{% endblock title %}</title>
 
+    <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+    <script src="{% static 'JS/particles-init.js' %}"></script>
+
     {% compress css %}
     <link rel="stylesheet" href="{% static 'CSS/swiper-bundle.min.css' %}">
     <link rel="stylesheet" href="{% static 'src/output.css' %}">
@@ -21,6 +24,8 @@
 </head>
 
 <body class="bg-background font-sans">
+    <div id="particles-js" style="width: 100%; height: 100vh; position: absolute; z-index:-1"></div>
+
     <!-- Theme Selector -->
     <div class="flow-root">
         <div class="w-38 float-right p-2 pr-5">
