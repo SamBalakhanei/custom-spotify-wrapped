@@ -35,6 +35,9 @@ def save_wrapped(user, time_period, data, desc):
     user = user
     now = datetime.datetime.now()
 
+    if Wrapped.objects.filter(date_created=now, time_period=time_period, user=user).exists():
+        return
+
     Wrapped.objects.create(
         user=user,
         date_created=now,
@@ -464,13 +467,12 @@ def generate_wrapped(user, limit=10, period='medium_term'):
         # Process top artists with access_token
         artists_data = get_top_artists(access_token, limit, period)
         top_artists = process_top_artists(artists_data, access_token)
-        desc = generate_desc(top_artists)
 
         # Process top tracks as before
         tracks_data = get_top_tracks(access_token, limit, period)
         top_tracks = process_top_tracks(tracks_data, access_token)
 
-        wrapped = {"artists": top_artists, "tracks": top_tracks, 'desc':desc}
+        wrapped = {"artists": top_artists, "tracks": top_tracks}
         return wrapped
 
     except SpotifyToken.DoesNotExist:
@@ -486,18 +488,17 @@ def create_new_wrapped(request, limit=10, period='medium_term'):
     """
     wrapped = generate_wrapped(request.user, limit, period)
     if wrapped:
-        save_wrapped(request.user, period, wrapped, generate_desc(wrapped["artists"]))
+        desc = generate_desc(wrapped['artists'])
+        save_wrapped(request.user, period, wrapped, desc)
         access_token = SpotifyToken.objects.get(user=request.user).access_token
         user_profile = get_user_profile(access_token)
         top_genre = get_user_top_genre(access_token, limit, period)
-        gemini_summary = generate_desc(wrapped["artists"])
 
         context = {'top_artists': wrapped["artists"],
                    'top_tracks': wrapped["tracks"],
-                   'desc': wrapped['desc'],
+                   'desc': desc,
                    'top_genre': top_genre,
                    'user_profile': user_profile,
-                   'gemini_summary': gemini_summary
                    }
         return render(request, 'wrapped.html', context)
     else:
@@ -522,14 +523,21 @@ def view_past_wrap(request, item_id):
         wrapped_obj.desc = generate_desc(wrapped_obj.data['artists'])
         wrapped_obj.save()
 
-    context = {'top_artists': wrapped['data']["artists"], 'top_tracks': wrapped['data']["tracks"], 'desc':wrapped_obj.desc}
+    access_token = SpotifyToken.objects.get(user=request.user).access_token
+    user_profile = get_user_profile(access_token)
+    top_genre = get_user_top_genre(access_token, 10, wrapped['time_period'])
+
+    context = {'top_artists': wrapped_obj.data['artists'],
+               'top_tracks': wrapped_obj.data['tracks'],
+               'desc': wrapped['desc'],
+               'top_genre': top_genre,
+               'user_profile': user_profile,
+               }
     return render(request, 'view_past_wrap.html', context)
 
 
 def delete_wrapped(request, item_id):
     Wrapped.objects.get(id=item_id).delete()
-
-
     return get_past_wrappeds(request)
 
 

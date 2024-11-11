@@ -14,17 +14,25 @@
 
 {% block content %}
     <h1 class="text-4xl text-center font-bold p-10 text-text">
-        {% trans "Your Top Spotify Artists" %}
+        {% trans "Your Spotify Wrapped" %}
     </h1>
-
+    
     <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
         <div class="swiper-wrapper">
             <!-- Slide 1: Welcome -->
-            <div class="swiper-slide text-center text-text">Welcome to your Spotify Wrapped</div>
+            <div class="swiper-slide text-center text-text text-xl">
+                <!-- Profile Picture -->
+                    {% if user_profile.profile_picture %}
+                        <img src="{{ user_profile.profile_picture }}" alt="User Profile Picture"
+                             class="w-32 h-32 mx-auto rounded-full mt-4">
+                    {% else %}
+                        <strong>No profile picture available.</strong>
+                    {% endif %}
+                <p class="mt-2">Welcome to your Spotify Wrapped...</p></div>
 
             <!-- Slide 2: Introduction to Top Artists -->
             <div class="swiper-slide text-center text-text">
-                You listened to many different artists but there were 5 that stood out:
+                <p class="mt-8 mx-6 text-xl justify-center">You listened to many different artists, but there were 5 that stood out:</p>
             </div>
 
             {% if top_artists %}
@@ -44,7 +52,8 @@
             {% endif %}
 
             <!-- Slide 8: Introduction to Top Tracks -->
-            <div class="swiper-slide text-center text-text">Now onto your top tracks</div>
+            <div class="swiper-slide text-center text-text">
+                <p class="mt-4 text-xl">Now onto your top tracks:</p></div>
 
             {% if top_tracks %}
                 <!-- Slides 9-13: Top 5 Tracks -->
@@ -66,14 +75,14 @@
             <div class="swiper-slide text-center text-text">
                 <div class="p-4">
                     <h2 class="text-2xl font-bold mb-4">Personalized Summary</h2>
-                    <p class="text-lg">{{ gemini_summary }}</p>
+                    <p class="text-lg">{{ desc }}</p>
                 </div>
             </div>
 
             <!-- Slide 14: Final Summary Slide -->
             <div class="swiper-slide text-center text-text">
                 <div class="p-4">
-                    <h2 class="text-3xl font-bold mb-4">Summary of Your Spotify Wrapped</h2> <!-- Larger title text -->
+                    <h2 class="text-3xl font-bold mb-4">In Summary</h2> <!-- Larger title text -->
 
                     <!-- Profile Picture -->
                     {% if user_profile.profile_picture %}
@@ -108,12 +117,15 @@
             </div>
 
         </div>
+         <div class="swiper-pagination" style="bottom: 1px;"></div>
 
-        <!-- Pagination and Navigation Buttons -->
-        <div class="swiper-pagination" style="bottom: 1px;"></div>
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
     </div>
+        <div class="swiper-button-next mr-6" style="left:70% ; bottom:50%"></div>
+        <div class="swiper-button-prev ml-6" style="left:28% ; bottom:50%"></div>
+    
+    <!-- Pagination and Navigation Buttons -->
+
+
 {% endblock content %}
 
 {% block extra_js %}
