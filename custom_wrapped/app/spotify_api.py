@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from dotenv import load_dotenv
 from django.utils import timezone
 import datetime
+from collections import Counter
 
 # Load environment variables
 load_dotenv()
@@ -76,10 +77,9 @@ def refresh_access_token(refresh_token):
     else:
         response.raise_for_status()
 
-
 def get_user_profile(access_token):
     """
-    Retrieves the Spotify user profile.
+    Retrieves the Spotify user profile, including profile picture if available.
     """
     url = f'{SPOTIFY_API_BASE_URL}/me'
     headers = {
@@ -87,9 +87,19 @@ def get_user_profile(access_token):
     }
     response = requests.get(url, headers=headers)
     if response.status_code == 200:
-        return response.json()
+        profile_data = response.json()
+
+        # Safely get the profile picture URL
+        profile_picture_url = profile_data.get('images', [{}])[0].get('url', '') if profile_data.get('images') else ''
+
+        return {
+            'id': profile_data.get('id'),
+            'display_name': profile_data.get('display_name'),
+            'profile_picture': profile_picture_url  # Use the extracted profile picture URL
+        }
     else:
         response.raise_for_status()
+
 
 
 def get_top_tracks(access_token, limit=10, time_range='medium_term'):
@@ -169,5 +179,36 @@ def get_related_artists(access_token, artist_id, limit=5):
             }
             for artist in related_artists
         ]
+    else:
+        response.raise_for_status()
+
+
+def get_user_top_genre(access_token, limit=10, period='medium_term'):
+    """
+    Retrieves the top genre from the user's top artists.
+    """
+    url = f'{SPOTIFY_API_BASE_URL}/me/top/artists'
+    headers = {
+        'Authorization': f'Bearer {access_token}',
+    }
+    params = {
+        'limit': limit,
+        'time_range': period
+    }
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code == 200:
+        artists_data = response.json()
+
+        # Collect genres from all top artists
+        genres = []
+        for artist in artists_data.get("items", []):
+            genres.extend(artist.get("genres", []))
+
+        # Determine the most common genre
+        if genres:
+            top_genre = Counter(genres).most_common(1)[0][0]
+            return top_genre
+        else:
+            return "Unknown Genre"
     else:
         response.raise_for_status()

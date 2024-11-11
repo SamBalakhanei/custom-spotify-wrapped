@@ -25,7 +25,8 @@ from .spotify_api import (
     get_user_profile,
     get_top_tracks,
     get_top_artists,
-    get_related_artists
+    get_related_artists,
+    get_user_top_genre
 )
 
 genai.configure(api_key=os.environ["API_KEY"])
@@ -485,7 +486,18 @@ def create_new_wrapped(request, limit=10, period='medium_term'):
     wrapped = generate_wrapped(request.user, limit, period)
     if wrapped:
         save_wrapped(request.user, period, wrapped, generate_desc(wrapped["artists"]))
-        context = {'top_artists': wrapped["artists"], 'top_tracks': wrapped["tracks"], 'desc': wrapped['desc']}
+        access_token = SpotifyToken.objects.get(user=request.user).access_token
+        user_profile = get_user_profile(access_token)
+        top_genre = get_user_top_genre(access_token, limit, period)
+        gemini_summary = generate_desc(wrapped["artists"])
+
+        context = {'top_artists': wrapped["artists"],
+                   'top_tracks': wrapped["tracks"],
+                   'desc': wrapped['desc'],
+                   'top_genre': top_genre,
+                   'user_profile': user_profile,
+                   'gemini_summary': gemini_summary
+                   }
         return render(request, 'wrapped.html', context)
     else:
         error_data = {
