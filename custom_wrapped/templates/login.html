@@ -1,15 +1,40 @@
+{% extends "_base.html" %}
 {% load i18n %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{% trans "Login" %}</title>
-</head>
-<body>
-    <h2>{% trans "Login" %}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">{% trans "Login" %}</button>
-    </form>
-</body>
-</html>
+{% load static %}
+
+{% block title %}{% translate "Login - Spotify Wrapped" %}{% endblock title %}
+
+{% block content %}
+    <div class="w-1/2 h-full mx-auto pt-10 pb-10">
+        <h1 class="m-6 text-text text-4xl text-center">{% trans "Login to Spotify Wrapped" %}</h1>
+        <form method="post">
+            {% csrf_token %}
+            <ul class="pt-10">
+
+                <li class="block mb-4">
+                    {{ form.username }}
+                </li>
+                <li class="block mb-4">
+                    {{ form.password }}
+                </li>
+
+            </ul>
+
+            <h1 class="text-text">{{ form.non_field_errors }}<h1>
+
+    
+            <button id="login-btn" type="submit" class="flex flex-col items-center justify-center w-full focus:outline-none text-text bg-accent font-medium rounded-lg text-sm px-5 py-2.5" onclick="disableButton(); this.form.submit(); return false;">
+                <p class="text-center">{% translate "Login" %}</p>
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function disableButton() {
+            var submitButton = document.getElementById("login-btn");
+            submitButton.disabled = true;
+            submitButton.innerText = "Please wait...";
+        }
+    </script>
+    
+{% endblock content %}

@@ -5,12 +5,11 @@ import os
 from dotenv import load_dotenv
 import requests
 from django.http import JsonResponse
-from .forms import RegisterForm
+from .forms import RegisterForm, CustomLoginForm
 from django.contrib.auth import login, authenticate
 from .models import SpotifyToken, Wrapped, Friend
 import datetime
 from django.utils import timezone
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .utils.spotify_utils import process_top_tracks, process_top_artists
 import google.generativeai as genai
@@ -108,7 +107,7 @@ def login_view(request):
     Otherwise, it just sends them to the login page
     """
     if request.method == 'POST':
-        form = AuthenticationForm(request, data=request.POST)
+        form = CustomLoginForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
@@ -116,8 +115,11 @@ def login_view(request):
             if user is not None:
                 login(request, user)
                 return redirect('index')
+            else:
+                form.add_error(None, 'Invalid username or password')
+
     else:
-        form = AuthenticationForm()
+        form = CustomLoginForm()
     template_name = 'login.html'
     context = {
         'form': form
