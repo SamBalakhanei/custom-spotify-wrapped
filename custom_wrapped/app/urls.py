@@ -43,6 +43,9 @@ urlpatterns = [
     path('cancel_friend_request/<int:friend_id>/', views.cancel_friend_request, name='cancel_friend_request'),
     path('remove_friend/<int:friend_id>/', views.remove_friend, name='remove_friend'),
 
+    # Duo-Wrapped URL
+    path('duo_wrapped/<int:friend_id>/', views.duo_wrapped, name='duo_wrapped'),
+
     # Account Management URL
     path('delete_account/', views.delete_account, name='delete_account'),
     path('delete_wrapped/<int:item_id>/', views.delete_wrapped, name='delete_wrapped')

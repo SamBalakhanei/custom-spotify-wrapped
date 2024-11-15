@@ -1,0 +1,32 @@
+<!-- templates/slides/duo_track_slide.html -->
+<div class="swiper-slide">
+    <div class="p-4 bg-background text-text">
+        <div class="flex justify-around">
+            <!-- User's Track -->
+            <div class="w-1/2 text-center">
+                <img src="{{ user_track.album_image }}"
+                     class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg"
+                     alt="Album Cover">
+                <div class="mt-4">
+                    <strong class="text-2xl">{{ number }}. {{ user_track.track_name }}</strong>
+                    <p class="mt-2">
+                        {% trans "Album: " %}{{ user_track.album_name }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Friend's Track -->
+            <div class="w-1/2 text-center">
+                <img src="{{ friend_track.album_image }}"
+                     class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg"
+                     alt="Album Cover">
+                <div class="mt-4">
+                    <strong class="text-2xl">{{ number }}. {{ friend_track.track_name }}</strong>
+                    <p class="mt-2">
+                        {% trans "Album: " %}{{ friend_track.album_name }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

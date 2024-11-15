@@ -1,0 +1,9 @@
+{% extends "_base.html" %}
+{% block title %}Error{% endblock title %}
+{% block content %}
+<div class="container text-center justify-center mt-10">
+    <h1 class="text-4xl text-center font-bold text-text">Error</h1>
+    <p class="mt-4 text-lg text-text">{{ message }}</p>
+    <a href="{% url 'index' %}" class="mt-6 inline-block bg-accent text-white rounded px-4 py-2">Go Back to Home</a>
+</div>
+{% endblock content %}

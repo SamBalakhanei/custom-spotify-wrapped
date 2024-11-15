@@ -1,0 +1,84 @@
+{% extends "_base.html" %}
+{% load i18n %}
+{% load compress %}
+{% load static %}
+
+{% block title %}
+    {% trans "Duo Wrapped" %}
+{% endblock title %}
+
+{% block content %}
+    <h1 class="text-4xl text-center font-bold p-10 text-text">
+        {% trans "Duo Wrapped: " %} {{ user.username }} & {{ friend.username }}
+    </h1>
+
+    <div class="swiper mt-8 max-w-4xl mx-auto border-4 border-accent rounded-lg">
+        <div class="swiper-wrapper">
+            <!-- Slide 1: Introduction -->
+            <div class="swiper-slide text-center text-text text-xl">
+                <p class="mt-2">
+                    {% trans "This is a comparison of your Spotify Wrapped with your friend!" %}
+                </p>
+            </div>
+
+            <!-- Top Artists Comparison -->
+            <div class="swiper-slide">
+                <h2 class="text-2xl font-bold text-center">{% trans "Top Artists Comparison" %}</h2>
+                {% for user_artist, friend_artist in artists_comparison %}
+                    {% include "slides/duo_artist_slide.html" with user_artist=user_artist friend_artist=friend_artist number=forloop.counter %}
+                {% endfor %}
+            </div>
+
+            <!-- Top Tracks Comparison -->
+            <div class="swiper-slide">
+                <h2 class="text-2xl font-bold text-center">{% trans "Top Tracks Comparison" %}</h2>
+                {% for user_track, friend_track in tracks_comparison %}
+                    {% include "slides/duo_track_slide.html" with user_track=user_track friend_track=friend_track number=forloop.counter %}
+                {% endfor %}
+            </div>
+
+            <!-- Compatibility Report -->
+            <div class="swiper-slide text-center text-text">
+                <h2 class="text-2xl font-bold">{% trans "Compatibility Report" %}</h2>
+                <p class="text-lg">{{ compatibility_desc }}</p>
+            </div>
+
+            <!-- Summary Slide -->
+            <div class="swiper-slide text-center text-text">
+                <div class="p-4">
+                    <h2 class="text-3xl font-bold mb-4">{% trans "In Summary" %}</h2>
+
+                    <!-- Shared Genres -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-2">{% trans "Shared Top Genres" %}</h3>
+                    <p class="text-lg">{{ shared_genres }}</p>
+
+                    <!-- Shared Favorite Tracks -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-2">{% trans "Shared Favorite Tracks" %}</h3>
+                    <ol class="list-decimal list-inside text-lg">
+                        {% for track in shared_tracks %}
+                            <li>{{ track.track_name }}</li>
+                        {% endfor %}
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <div class="swiper-pagination"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-button-prev"></div>
+    </div>
+{% endblock content %}
+
+{% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            new Swiper('.swiper', {
+                loop: true,
+                slidesPerView: 1,
+                spaceBetween: 30,
+                pagination: { el: '.swiper-pagination', clickable: true },
+                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+            });
+        });
+    </script>
+{% endblock extra_js %}

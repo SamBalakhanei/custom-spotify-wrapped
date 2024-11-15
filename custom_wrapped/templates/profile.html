@@ -80,7 +80,9 @@
                                 {% with friend_id=friend.friend.id %}
                                 <div class="flex justify-center items-center space-x-2">
                                     <span class="text-text">{{ friend.friend.username }}</span>
-                                    <button class="bg-green rounded-2xl border-2 border-accent px-4 ml-2 text-white">{% trans "View Duo-Wrapped" %}</button>
+                                    <a href="{% url 'duo_wrapped' friend_id %}" class="bg-green rounded-2xl border-2 border-accent px-4 ml-2 text-white">
+                                        {% trans "View Duo-Wrapped" %}
+                                    </a>
                                     
                                     <!-- Remove Friend Link -->
                                     <a href="{% url 'remove_friend' friend_id %}" 
@@ -91,7 +93,7 @@
                                 {% with friend_id=friend.user.id %}
                                 <div class="flex justify-center items-center space-x-2">
                                     <span class="text-text">{{ friend.user.username }}</span>
-                                    <button class="bg-green rounded-2xl border-2 border-accent px-4 ml-2 text-white">{% trans "View Duo-Wrapped" %}</button>
+                                    <a href="{% url 'duo_wrapped' friend_id %}" class="bg-green rounded-2xl border-2 border-accent px-4 ml-2 text-white">{% trans "View Duo-Wrapped" %}</a>
                                     
                                     <!-- Remove Friend Link -->
                                     <a href="{% url 'remove_friend' friend_id %}" 

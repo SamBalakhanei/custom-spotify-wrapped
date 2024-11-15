@@ -2,6 +2,8 @@ from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 import urllib.parse
 import os
+
+from django.template import TemplateDoesNotExist
 from dotenv import load_dotenv
 import requests
 from django.http import JsonResponse
@@ -27,6 +29,7 @@ from .spotify_api import (
     get_related_artists,
     get_user_top_genre
 )
+from django.template.loader import get_template
 
 genai.configure(api_key=os.environ["API_KEY"])
 
@@ -558,3 +561,77 @@ def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
     print(wrapped_data)
     return render(request, 'your_template_name.html', {'wrapped_data': wrapped_data})
 
+
+@login_required
+def duo_wrapped(request, friend_id):
+    # Get valid access token for the current user
+    access_token = get_valid_access_token(request.user)
+    if not access_token:
+        return redirect('spotify_login')  # Redirect to login if token is invalid
+    else:
+        print(access_token)
+
+
+    friend = get_object_or_404(User, id=friend_id)
+    friend_wrapped = Wrapped.objects.filter(user=friend).order_by('-date_created').first()
+    if not friend_wrapped:
+        return render(request, 'error.html', {'message': 'Friend has no Spotify Wrapped data.'})
+
+    time_period = friend_wrapped.time_period
+    user_wrapped = generate_wrapped(request.user, limit=10, period=time_period)
+    if not user_wrapped:
+        return render(request, 'error.html', {'message': 'Unable to fetch your Spotify Wrapped data.'})
+
+    compatibility_desc = generate_desc({
+        'artists': [artist['name'] for artist in friend_wrapped.data['artists'].values()] +
+                   [artist['name'] for artist in user_wrapped['artists'].values()]
+    })
+
+    # Structure data for comparison
+    artists_comparison = zip(
+        user_wrapped['artists'].values(),
+        friend_wrapped.data['artists'].values()
+    )
+    tracks_comparison = zip(
+        user_wrapped['tracks'].values(),
+        friend_wrapped.data['tracks'].values()
+    )
+
+    # Calculate shared genres
+    user_genres = {genre for artist in user_wrapped['artists'].values() for genre in artist['genres']}
+    friend_genres = {genre for artist in friend_wrapped.data['artists'].values() for genre in artist['genres']}
+    shared_genres = user_genres.intersection(friend_genres)
+
+    # Calculate shared tracks
+    user_tracks = {track['track_name'] for track in user_wrapped['tracks'].values()}
+    friend_tracks = {track['track_name'] for track in friend_wrapped.data['tracks'].values()}
+    shared_tracks = user_tracks.intersection(friend_tracks)
+
+    context = {
+        'friend': friend,
+        'friend_wrapped': friend_wrapped,
+        'user_wrapped': user_wrapped,
+        'compatibility_desc': compatibility_desc,
+        'artists_comparison': artists_comparison,
+        'tracks_comparison': tracks_comparison,
+        'shared_genres': ', '.join(shared_genres),
+        'shared_tracks': [{'track_name': name} for name in shared_tracks],
+    }
+    return render(request, 'duo_wrapped.html', context)
+
+def get_valid_access_token(user):
+    try:
+        spotify_token = SpotifyToken.objects.get(user=user)
+        if spotify_token.is_expired():
+            if spotify_token.refresh_token:
+                token_data = refresh_access_token(spotify_token.refresh_token)
+                spotify_token.access_token = token_data['access_token']
+                if 'refresh_token' in token_data:
+                    spotify_token.refresh_token = token_data['refresh_token']
+                spotify_token.expires_in = timezone.now() + datetime.timedelta(seconds=token_data['expires_in'])
+                spotify_token.save()
+            else:
+                return None
+        return spotify_token.access_token
+    except SpotifyToken.DoesNotExist:
+        return None
