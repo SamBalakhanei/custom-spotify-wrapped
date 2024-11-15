@@ -70,7 +70,7 @@ msgstr ""
 
 #: templates/contact_us.html:26
 msgid "Send Us Feedback"
-msgstr "Envíanos tus comentarios:"
+msgstr "Envíanos tus comentarios"
 
 #: templates/index.html:4
 msgid "Home - Spotify Wrapped"
