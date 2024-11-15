@@ -69,7 +69,7 @@ msgid "Backend"
 msgstr ""
 
 #: templates/contact_us.html:26
-msgid "Send Us Feedback:"
+msgid "Send Us Feedback"
 msgstr "Envíanos tus comentarios:"
 
 #: templates/index.html:4
@@ -241,3 +241,31 @@ msgstr "No se encontraron pistas para este periodo."
 #: templates/wrapped.html:6
 msgid "Your Spotify Wraooed"
 msgstr "Tu Spotify Wrapped"
+
+#: forms.py
+msgid "Email"
+msgstr "Correo electrónico"
+
+msgid "Username"
+msgstr "Usuario"
+
+msgid "Password"
+msgstr "Contraseña"
+
+msgid "Retype password"
+msgstr "Vuelve a escribir la contraseña"
+
+msgid "An account with this email already exists."
+msgstr "Ya existe una cuenta con este correo electrónico."
+
+msgid "An account with this username already exists."
+msgstr "Ya existe una cuenta con este nombre de usuario."
+
+msgid "Form is not valid. Cannot save user."
+msgstr "El formulario no es válido. No se puede guardar el usuario."
+
+msgid "Register for Spotify Wrapped"
+msgstr "Regístrate para Spotify Wrapped"
+
+msgid "Login to Spotify Wrapped"
+msgstr "Inicia sesión en Spotify Wrapped"
