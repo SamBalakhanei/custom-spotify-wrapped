@@ -564,14 +564,6 @@ def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
 
 @login_required
 def duo_wrapped(request, friend_id):
-    # Get valid access token for the current user
-    access_token = get_valid_access_token(request.user)
-    if not access_token:
-        return redirect('spotify_login')  # Redirect to login if token is invalid
-    else:
-        print(access_token)
-
-
     friend = get_object_or_404(User, id=friend_id)
     friend_wrapped = Wrapped.objects.filter(user=friend).order_by('-date_created').first()
     if not friend_wrapped:
@@ -582,10 +574,14 @@ def duo_wrapped(request, friend_id):
     if not user_wrapped:
         return render(request, 'error.html', {'message': 'Unable to fetch your Spotify Wrapped data.'})
 
-    compatibility_desc = generate_desc({
-        'artists': [artist['name'] for artist in friend_wrapped.data['artists'].values()] +
-                   [artist['name'] for artist in user_wrapped['artists'].values()]
-    })
+    compatibility_desc = generate_desc(
+        {
+            key: value for key, value in user_wrapped['artists'].items()
+        } |
+        {
+            key: value for key, value in friend_wrapped.data['artists'].items()
+        }
+    )
 
     # Structure data for comparison
     artists_comparison = zip(
