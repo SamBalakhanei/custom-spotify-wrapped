@@ -48,5 +48,7 @@ urlpatterns = [
 
     # Account Management URL
     path('delete_account/', views.delete_account, name='delete_account'),
-    path('delete_wrapped/<int:item_id>/', views.delete_wrapped, name='delete_wrapped')
+    path('delete_wrapped/<int:item_id>/', views.delete_wrapped, name='delete_wrapped'),
+    path('past_duo_wrappeds/', views.view_past_duo_wrappeds, name='past_duo_wrappeds'),
+    path('duo_wrapped/<int:duo_wrapped_id>/', views.view_duo_wrapped_detail, name='view_duo_wrapped_detail'),
 ]

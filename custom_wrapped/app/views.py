@@ -9,7 +9,7 @@ import requests
 from django.http import JsonResponse
 from .forms import RegisterForm, CustomLoginForm
 from django.contrib.auth import login, authenticate
-from .models import SpotifyToken, Wrapped, Friend
+from .models import SpotifyToken, Wrapped, Friend, DuoWrapped
 import datetime
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -46,6 +46,18 @@ def save_wrapped(user, time_period, data, desc):
         time_period=time_period,
         desc=desc,
         data=data
+    )
+
+def save_duo(request, data):
+    now = datetime.datetime.now()
+
+    if DuoWrapped.objects.filter(date_created=now, user=request.user, friend=data.friend).exists():
+        return
+
+    DuoWrapped.objects.create(
+        friend=data.friend,
+        data = data,
+        date_created = now
     )
 
 
@@ -613,21 +625,28 @@ def duo_wrapped(request, friend_id):
         'shared_genres': ', '.join(shared_genres),
         'shared_tracks': [{'track_name': name} for name in shared_tracks],
     }
+
+    data = context
+    save_duo(data)
+
     return render(request, 'duo_wrapped.html', context)
 
-def get_valid_access_token(user):
-    try:
-        spotify_token = SpotifyToken.objects.get(user=user)
-        if spotify_token.is_expired():
-            if spotify_token.refresh_token:
-                token_data = refresh_access_token(spotify_token.refresh_token)
-                spotify_token.access_token = token_data['access_token']
-                if 'refresh_token' in token_data:
-                    spotify_token.refresh_token = token_data['refresh_token']
-                spotify_token.expires_in = timezone.now() + datetime.timedelta(seconds=token_data['expires_in'])
-                spotify_token.save()
-            else:
-                return None
-        return spotify_token.access_token
-    except SpotifyToken.DoesNotExist:
-        return None
+
+
+@login_required
+def view_past_duo_wrappeds(request):
+    past_duos = DuoWrapped.objects.filter(user=request.user).order_by('-date_created')
+
+    context = {
+        'past_duos': past_duos,
+    }
+    return render(request, 'past_duo_wrappeds.html', context)
+
+
+@login_required
+def view_duo_wrapped_detail(request, duo_wrapped_id):
+    duo_wrapped = get_object_or_404(DuoWrapped, id=duo_wrapped_id, user=request.user)
+
+    context = duo_wrapped.data
+
+    return render(request, 'duo_wrapped.html', context)
