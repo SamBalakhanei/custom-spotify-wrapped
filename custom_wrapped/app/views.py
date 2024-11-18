@@ -556,3 +556,6 @@ def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
     print(wrapped_data)
     return render(request, 'your_template_name.html', {'wrapped_data': wrapped_data})
 
+def select_period(request):
+    return render(request, 'select_period.html')
+
