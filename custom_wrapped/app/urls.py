@@ -28,8 +28,7 @@ urlpatterns = [
     # Updated view name
 
     # Wrapped Data URLs
-    path('wrapped/<int:limit>/<str:period>/', views.create_new_wrapped, name='wrapped'),
-    path('view_wrap/<int:item_id>/', views.view_past_wrap, name='view_wrap'),
+    path('wrapped/<int:limit>/<str:period>/', views.display_wrapped, name='wrapped'),
     path('get-past-wrappeds/', views.get_past_wrappeds, name='past_wraps'),
 
     # Contact and Profile URLs
@@ -45,5 +44,6 @@ urlpatterns = [
 
     # Account Management URL
     path('delete_account/', views.delete_account, name='delete_account'),
-    path('delete_wrapped/<int:item_id>/', views.delete_wrapped, name='delete_wrapped')
+    path('delete_wrapped/<int:item_id>/', views.delete_wrapped, name='delete_wrapped'),
+    path('select_period/', views.select_period, name='select_period')
 ]

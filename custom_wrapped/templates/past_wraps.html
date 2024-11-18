@@ -17,14 +17,14 @@
             <div class="table-row text-text pl-2">
                 <div class="table-cell text-left">Date</div>
                 <div class="table-cell text-left">Period</div>
-                <div class="table-cell text-left">Edit</div>
+                <div class="table-cell text-left">Delete</div>
             </div>
         </div>
         <div class="table-row-group">
         {% for key, wrap in past_wraps.items %}
             <div class="text-text table-row text-left">
                 <div class="table-cell">
-                <a href="{% url 'view_wrap' item_id=wrap.id %}">
+                <a href="{% url 'wrapped' limit=10 period=wrap.time_period%}">
                     <p class=" text-text">{{ wrap.date_formatted }}</p>
                 </a>
                 </div>
@@ -33,7 +33,7 @@
                 </div>
                 <div class="table-cell">
                 <a href="{% url 'delete_wrapped' item_id=wrap.id %}">
-                <button class="text-text">Delete</button>
+                <button class="text-text">X</button>
                 </a>
             </div>
             </div>
