@@ -87,7 +87,19 @@
         function changeLanguage() {
             const selectedLanguage = document.getElementById('languages').value;
             localStorage.setItem('selectedLanguage', selectedLanguage);
-            window.location.href = `/${selectedLanguage}/`;
+            const currentUrl = window.location.pathname;
+            const langPrefixRegex = /^\/([a-zA-Z-]+)(\/.*)?$/;
+            const match = currentUrl.match(langPrefixRegex);
+    
+            let newUrl;
+            if (match) {
+                newUrl = currentUrl.replace(langPrefixRegex, `/${selectedLanguage}$2`);
+            } else {
+                newUrl = `/${selectedLanguage}${currentUrl}`;
+            }
+    
+            // Change the language on the page dynamically without reloading
+            window.location.pathname = newUrl;
         }
     </script>
     {% block extra_js %}
