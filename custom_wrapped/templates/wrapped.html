@@ -150,7 +150,23 @@
                     nextEl: '.swiper-button-next',
                     prevEl: '.swiper-button-prev',
                 },
-            });
+                on: {
+                    slideChange: function () {
+                        // Pause all audio elements
+                        document.querySelectorAll('[swiper-audio]').forEach(audio => {
+                            audio.pause();
+                            audio.currentTime = 0; // Optional: Reset playback to the beginning
+                        });
+
+                        // Play the audio element in the currently active slide
+                        const activeSlide = this.slides[this.activeIndex];
+                        const audioElement = activeSlide.querySelector('[swiper-audio]');
+                        if (audioElement) {
+                            audioElement.play();
+                        }
+                    },
+                }
+                });
         });
     </script>
 {% endblock extra_js %}

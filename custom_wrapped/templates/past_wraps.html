@@ -24,7 +24,7 @@
         {% for key, wrap in past_wraps.items %}
             <div class="text-text table-row text-left">
                 <div class="table-cell">
-                <a href="{% url 'wrapped' limit=10 period=wrap.time_period%}">
+                <a href="{% url 'wrapped' limit=10 period=wrap.time_period %}">
                     <p class=" text-text">{{ wrap.date_formatted }}</p>
                 </a>
                 </div>
