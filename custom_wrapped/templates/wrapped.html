@@ -13,9 +13,17 @@
 {% endblock extra_css %}
 
 {% block content %}
+    <a href="{% url 'index' %}" class="flex-1">
+        <button class="flex flex-col items-center justify-center w-32 focus:outline-none text-text bg-accent font-medium rounded-lg text-sm px-4 py-2">
+            <p class="text-center">{% trans "Back" %}</p>
+        </button>
+    </a>
+    
     <h1 class="text-4xl text-center font-bold p-10 text-text">
-        {% trans "Your Spotify Wrapped" %}
+        {% trans "Your Wrapped"%}
     </h1>
+    
+    
     
     <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
         <div class="swiper-wrapper">
