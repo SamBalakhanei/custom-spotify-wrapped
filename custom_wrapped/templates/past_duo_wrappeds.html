@@ -2,7 +2,7 @@
 <ul>
     {% for duo in past_duos %}
         <li>
-            <a href="{% url 'view_duo_wrapped_detail' duo.id %}">
+            <a href="{% url 'view_duo_wrapped_detail' duo.friend.id %}">
                 {{ duo.friend.username }} ({{ duo.date_created }})
             </a>
         </li>

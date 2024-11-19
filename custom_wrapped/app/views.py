@@ -48,17 +48,33 @@ def save_wrapped(user, time_period, data, desc):
         data=data
     )
 
-def save_duo(request, data):
+def save_duo(user, friend, context):
+    """
+    Saves a DuoWrapped object for the user and friend.
+    """
     now = datetime.datetime.now()
 
-    if DuoWrapped.objects.filter(date_created=now, user=request.user, friend=data.friend).exists():
-        return
+    # Check if a DuoWrapped already exists for the same user, friend, and date
+    if DuoWrapped.objects.filter(user=user, friend=friend, date_created=now).exists():
+        return  # Skip saving if it already exists
 
-    DuoWrapped.objects.create(
-        friend=data.friend,
-        data = data,
-        date_created = now
+    # Ensure the data in context is serializable
+    serializable_context = {
+        key: value if isinstance(value, (str, int, list, dict)) else str(value)
+        for key, value in context.items()
+    }
+
+    # Save the DuoWrapped object
+    created_wrapped, created = DuoWrapped.objects.get_or_create(
+        user=user,
+        friend=friend,
+        data=serializable_context,
+        date_created=now
     )
+
+    if not created:
+        duo_wrapped.save()
+
 
 
 def get_past_wrappeds(request):
@@ -586,24 +602,15 @@ def duo_wrapped(request, friend_id):
     if not user_wrapped:
         return render(request, 'error.html', {'message': 'Unable to fetch your Spotify Wrapped data.'})
 
-    compatibility_desc = generate_desc(
-        {
-            key: value for key, value in user_wrapped['artists'].items()
-        } |
-        {
-            key: value for key, value in friend_wrapped.data['artists'].items()
-        }
-    )
-
     # Structure data for comparison
-    artists_comparison = zip(
+    artists_comparison = list(zip(
         user_wrapped['artists'].values(),
         friend_wrapped.data['artists'].values()
-    )
-    tracks_comparison = zip(
+    ))
+    tracks_comparison = list(zip(
         user_wrapped['tracks'].values(),
         friend_wrapped.data['tracks'].values()
-    )
+    ))
 
     # Calculate shared genres
     user_genres = {genre for artist in user_wrapped['artists'].values() for genre in artist['genres']}
@@ -613,21 +620,21 @@ def duo_wrapped(request, friend_id):
     # Calculate shared tracks
     user_tracks = {track['track_name'] for track in user_wrapped['tracks'].values()}
     friend_tracks = {track['track_name'] for track in friend_wrapped.data['tracks'].values()}
-    shared_tracks = user_tracks.intersection(friend_tracks)
+    shared_tracks = [{'track_name': name} for name in user_tracks.intersection(friend_tracks)]
 
+    # Prepare context
     context = {
         'friend': friend,
         'friend_wrapped': friend_wrapped,
         'user_wrapped': user_wrapped,
-        'compatibility_desc': compatibility_desc,
         'artists_comparison': artists_comparison,
         'tracks_comparison': tracks_comparison,
-        'shared_genres': ', '.join(shared_genres),
-        'shared_tracks': [{'track_name': name} for name in shared_tracks],
+        'shared_genres': list(shared_genres),  # Convert set to list
+        'shared_tracks': shared_tracks,
     }
 
-    data = context
-    save_duo(data)
+    # Save the DuoWrapped object
+    save_duo(request.user, friend, context)
 
     return render(request, 'duo_wrapped.html', context)
 
