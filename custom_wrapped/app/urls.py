@@ -45,10 +45,11 @@ urlpatterns = [
 
     # Duo-Wrapped URL
     path('duo_wrapped/<int:friend_id>/', views.duo_wrapped, name='duo_wrapped'),
-
+    path('past_duo_wrappeds/', views.view_past_duo_wrappeds, name='past_duo_wrappeds'),
+    path('duo_wrapped/<int:duo_wrapped_id>/<int:item_id>', views.view_duo_wrapped_detail,
+         name='view_duo_wrapped_detail'),
     # Account Management URL
     path('delete_account/', views.delete_account, name='delete_account'),
     path('delete_wrapped/<int:item_id>/', views.delete_wrapped, name='delete_wrapped'),
-    path('past_duo_wrappeds/', views.view_past_duo_wrappeds, name='past_duo_wrappeds'),
-    path('duo_wrapped/<int:duo_wrapped_id>/<int:item_id>', views.view_duo_wrapped_detail, name='view_duo_wrapped_detail'),
+path('select_period/', views.select_period, name='select_period'),
 ]

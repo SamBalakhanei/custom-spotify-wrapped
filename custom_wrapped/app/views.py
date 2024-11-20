@@ -9,7 +9,7 @@ import requests
 from django.http import JsonResponse
 from .forms import RegisterForm, CustomLoginForm
 from django.contrib.auth import login, authenticate
-from .models import SpotifyToken, Wrapped, Friend, DuoWrapped
+from .models import SpotifyToken, Wrapped, Friend
 import datetime
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
@@ -34,6 +34,14 @@ from django.template.loader import get_template
 genai.configure(api_key=os.environ["API_KEY"])
 
 def save_wrapped(user, time_period, data, desc):
+    """
+    Saves wrap, unless there is an existing wrap with the same data.
+    :param user:
+    :param time_period:
+    :param data:
+    :param desc:
+    :return: nothing
+    """
     user = user
     now = datetime.datetime.now()
 
@@ -78,6 +86,11 @@ def save_duo(user, friend, context):
 
 
 def get_past_wrappeds(request):
+    """
+    Fetches basic information of past wraps to display in a list on past_wraps.html
+    :param request:
+    :return: render request for past_wraps.html
+    """
     if request.method == 'GET':
         user = request.user
 
@@ -514,6 +527,53 @@ def generate_wrapped(user, limit=10, period='medium_term'):
         print(f"Error generating wrapped: {e}")
         return None
 
+def display_wrapped(request, limit, period):
+    """
+    Creates and saves a new wrapped summary for the user.
+    """
+    now = datetime.datetime.now()
+
+    access_token = SpotifyToken.objects.get(user=request.user).access_token
+    user_profile = get_user_profile(access_token)
+    top_genre = get_user_top_genre(access_token, limit, period)
+
+    if Wrapped.objects.filter(date_created=now, time_period=period, user=request.user).exists():
+        wrapped = Wrapped.objects.get(date_created=now, time_period=period, user=request.user)
+        context = {'top_artists': wrapped.data["artists"],
+                   'top_tracks': wrapped.data["tracks"],
+                   'desc': wrapped.desc,
+                   'top_genre': top_genre,
+                   'user_profile': user_profile,
+                   }
+    else:
+        wrapped = generate_wrapped(request.user, limit, period)
+        if wrapped:
+            desc = generate_desc(wrapped['artists'])
+            save_wrapped(request.user, period, wrapped, desc)
+            context = {'top_artists': wrapped["artists"],
+                       'top_tracks': wrapped["tracks"],
+                       'desc': desc,
+                       'top_genre': top_genre,
+                       'user_profile': user_profile,
+                       }
+        else:
+            error_data = {
+                "message": "Failed to generate wrapped summary."
+            }
+            return JsonResponse(error_data, status=500)
+
+    return render(request, 'wrapped.html', context)
+
+
+
+
+
+
+
+
+
+
+
 
 def create_new_wrapped(request, limit=10, period='medium_term'):
     """
@@ -570,8 +630,22 @@ def view_past_wrap(request, item_id):
 
 
 def delete_wrapped(request, item_id):
+    """
+    Deletes selected saved wrap.
+    :param request:
+    :param item_id:
+    :return:
+    """
     Wrapped.objects.get(id=item_id).delete()
     return get_past_wrappeds(request)
+
+def select_period(request):
+    """
+    Renders page for selection time period
+    :param request:
+    :return:
+    """
+    return render(request, 'select_period.html')
 
 
 
@@ -581,8 +655,10 @@ def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
     tracks = get_top_tracks(profile, limit, period)
 
     wrapped_data = {
+        # "user_info": get_user_profile(access_token),  # if implementing user intro data
         "top_artists": process_top_artists(artists),
         "top_tracks": process_top_tracks(tracks),
+        # Add more sections as needed
     }
     print(wrapped_data)
     return render(request, 'your_template_name.html', {'wrapped_data': wrapped_data})
