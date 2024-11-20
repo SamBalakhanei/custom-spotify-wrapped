@@ -9,7 +9,7 @@ import requests
 from django.http import JsonResponse
 from .forms import RegisterForm, CustomLoginForm
 from django.contrib.auth import login, authenticate
-from .models import SpotifyToken, Wrapped, Friend
+from .models import SpotifyToken, Wrapped, Friend, DuoWrapped
 import datetime
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
