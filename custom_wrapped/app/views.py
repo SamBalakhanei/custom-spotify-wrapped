@@ -2,6 +2,8 @@ from datetime import date
 from django.shortcuts import render, redirect, get_object_or_404
 import urllib.parse
 import os
+
+from django.template import TemplateDoesNotExist
 from dotenv import load_dotenv
 import requests
 from django.http import JsonResponse
@@ -27,6 +29,7 @@ from .spotify_api import (
     get_related_artists,
     get_user_top_genre
 )
+from django.template.loader import get_template
 
 genai.configure(api_key=os.environ["API_KEY"])
 
@@ -52,6 +55,34 @@ def save_wrapped(user, time_period, data, desc):
         desc=desc,
         data=data
     )
+
+def save_duo(user, friend, context):
+    """
+    Saves a DuoWrapped object for the user and friend.
+    """
+    now = datetime.datetime.now()
+
+    # Check if a DuoWrapped already exists for the same user, friend
+    if DuoWrapped.objects.filter(user=user, friend=friend).exists():
+        return  # Skip saving if it already exists
+
+    # Ensure the data in context is serializable
+    serializable_context = {
+        key: value if isinstance(value, (str, int, list, dict)) else str(value)
+        for key, value in context.items()
+    }
+
+    # Save the DuoWrapped object
+    created_wrapped, created = DuoWrapped.objects.get_or_create(
+        user=user,
+        friend=friend,
+        data=serializable_context,
+        date_created=now
+    )
+
+    if not created:
+        duo_wrapped.save()
+
 
 
 def get_past_wrappeds(request):
@@ -342,6 +373,10 @@ def remove_friend(request, friend_id):
     return redirect('profile')
 
 
+def show_top_tracks(request):
+    return render(request, 'top_tracks.html')
+
+
 def contact_us(request):
     return render(request, 'contact_us.html')
 
@@ -484,8 +519,6 @@ def generate_wrapped(user, limit=10, period='medium_term'):
         top_tracks = process_top_tracks(tracks_data, access_token)
 
         wrapped = {"artists": top_artists, "tracks": top_tracks}
-        desc = generate_desc(wrapped['artists'])
-        save_wrapped(user, period, wrapped, desc)
         return wrapped
 
     except SpotifyToken.DoesNotExist:
@@ -493,7 +526,6 @@ def generate_wrapped(user, limit=10, period='medium_term'):
     except Exception as e:
         print(f"Error generating wrapped: {e}")
         return None
-
 
 def display_wrapped(request, limit, period):
     """
@@ -535,6 +567,68 @@ def display_wrapped(request, limit, period):
 
 
 
+
+
+
+
+
+
+
+
+def create_new_wrapped(request, limit=10, period='medium_term'):
+    """
+    Creates and saves a new wrapped summary for the user.
+    """
+    wrapped = generate_wrapped(request.user, limit, period)
+    if wrapped:
+        desc = generate_desc(wrapped['artists'])
+        save_wrapped(request.user, period, wrapped, desc)
+        access_token = SpotifyToken.objects.get(user=request.user).access_token
+        user_profile = get_user_profile(access_token)
+        top_genre = get_user_top_genre(access_token, limit, period)
+
+        context = {'top_artists': wrapped["artists"],
+                   'top_tracks': wrapped["tracks"],
+                   'desc': desc,
+                   'top_genre': top_genre,
+                   'user_profile': user_profile,
+                   }
+        return render(request, 'wrapped.html', context)
+    else:
+        error_data = {
+            "message": "Failed to generate wrapped summary."
+        }
+        return JsonResponse(error_data, status=500)
+
+
+def view_past_wrap(request, item_id):
+    wrapped_obj = Wrapped.objects.get(id=item_id)  # Fetches the object with the given ID
+    wrapped = {
+        'id': wrapped_obj.id,
+        'date_created': wrapped_obj.date_created,
+        'date_formatted': date_format(wrapped_obj.date_created),
+        'time_period': wrapped_obj.time_period,
+        'desc': wrapped_obj.desc,
+        'data': wrapped_obj.data,
+    }
+
+    if wrapped_obj.desc == '':
+        wrapped_obj.desc = generate_desc(wrapped_obj.data['artists'])
+        wrapped_obj.save()
+
+    access_token = SpotifyToken.objects.get(user=request.user).access_token
+    user_profile = get_user_profile(access_token)
+    top_genre = get_user_top_genre(access_token, 10, wrapped['time_period'])
+
+    context = {'top_artists': wrapped_obj.data['artists'],
+               'top_tracks': wrapped_obj.data['tracks'],
+               'desc': wrapped['desc'],
+               'top_genre': top_genre,
+               'user_profile': user_profile,
+               }
+    return render(request, 'view_past_wrap.html', context)
+
+
 def delete_wrapped(request, item_id):
     """
     Deletes selected saved wrap.
@@ -545,7 +639,6 @@ def delete_wrapped(request, item_id):
     Wrapped.objects.get(id=item_id).delete()
     return get_past_wrappeds(request)
 
-
 def select_period(request):
     """
     Renders page for selection time period
@@ -554,3 +647,142 @@ def select_period(request):
     """
     return render(request, 'select_period.html')
 
+
+
+def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
+    # profile = get_user_profile(access_token)
+    artists = get_top_artists(profile, limit, period)
+    tracks = get_top_tracks(profile, limit, period)
+
+    wrapped_data = {
+        # "user_info": get_user_profile(access_token),  # if implementing user intro data
+        "top_artists": process_top_artists(artists),
+        "top_tracks": process_top_tracks(tracks),
+        # Add more sections as needed
+    }
+    print(wrapped_data)
+    return render(request, 'your_template_name.html', {'wrapped_data': wrapped_data})
+
+
+@login_required
+def duo_wrapped(request, friend_id):
+    friend = get_object_or_404(User, id=friend_id)
+    friend_wrapped = Wrapped.objects.filter(user=friend).order_by('-date_created').first()
+    if not friend_wrapped:
+        return render(request, 'error.html', {'message': 'Friend has no Spotify Wrapped data.'})
+
+    time_period = friend_wrapped.time_period
+    user_wrapped = generate_wrapped(request.user, limit=10, period=time_period)
+    if not user_wrapped:
+        return render(request, 'error.html', {'message': 'Unable to fetch your Spotify Wrapped data.'})
+
+    # Structure data for comparison
+    artists_comparison = list(zip(
+        user_wrapped['artists'].values(),
+        friend_wrapped.data['artists'].values()
+    ))
+    tracks_comparison = list(zip(
+        user_wrapped['tracks'].values(),
+        friend_wrapped.data['tracks'].values()
+    ))
+
+    # Extract user genres
+    user_genres = []
+    for artist in user_wrapped['artists'].values():  # Use `.values()` to iterate over the dict
+        genres = artist.get("genres", "")  # Genres are stored as a string
+        if genres:
+            user_genres.extend(genres.split(", "))  # Split the genres string into a list
+
+    # Extract friend genres
+    friend_genres = []
+    for artist in friend_wrapped.data['artists'].values():  # Use `.values()` to iterate
+        genres = artist.get("genres", "")
+        if genres:
+            friend_genres.extend(genres.split(", "))
+
+
+    # Calculate shared genres
+    user_genres_set = set(user_genres)
+    friend_genres_set = set(friend_genres)
+    shared_genres = user_genres_set.intersection(friend_genres_set)
+
+
+    # Generate compatibility description
+    compatibility_desc = generate_compat(user_genres, friend_genres)
+
+    # Calculate shared tracks
+    user_tracks = {track['track_name'] for track in user_wrapped['tracks'].values()}
+    friend_tracks = {track['track_name'] for track in friend_wrapped.data['tracks'].values()}
+    shared_tracks = [{'track_name': name} for name in user_tracks.intersection(friend_tracks)]
+
+    # Prepare context
+    context = {
+        'friend': friend,
+        'friend_wrapped': friend_wrapped,
+        'user_wrapped': user_wrapped,
+        'artists_comparison': artists_comparison,
+        'tracks_comparison': tracks_comparison,
+        'shared_genres': list(shared_genres),  # Convert set to list
+        'shared_tracks': shared_tracks,
+        'compatibility_desc': compatibility_desc,
+    }
+
+    # Save the DuoWrapped object
+    save_duo(request.user, friend, context)
+
+    return render(request, 'duo_wrapped.html', context)
+
+
+def generate_compat(user_genres, friend_genres):
+    """
+    Generate a compatibility description based on shared and individual genres.
+    Args:
+        user_genres (list): Genres of the user.
+        friend_genres (list): Genres of the friend.
+
+    Returns:
+        str: A descriptive compatibility string.
+    """
+    model = genai.GenerativeModel("gemini-1.5-flash")
+
+    # Convert genre lists to comma-separated strings for the AI prompt
+    user_genres_str = ", ".join(user_genres)
+    friend_genres_str = ", ".join(friend_genres)
+
+    # Generate compatibility description
+    response = model.generate_content(
+        f"In 100 words or under, tell me how compatible the music tastes are of 'you': {user_genres_str} compared to 'your friend's': {friend_genres_str}. "
+        "Start with 'Based on both of your genres, '. Evaluate all the genres together. Make the sentences flow, and don't use Markdown or add asterisks."
+    )
+
+    return response.text
+
+
+
+
+
+@login_required
+def view_past_duo_wrappeds(request):
+    past_duos = DuoWrapped.objects.filter(user=request.user).order_by('-date_created')
+
+    context = {
+        'past_duos': past_duos,
+    }
+    return render(request, 'past_duo_wrappeds.html', context)
+
+
+@login_required
+def view_duo_wrapped_detail(request, duo_wrapped_id, item_id):
+    # Fetch the DuoWrapped object using the ID
+    duo_wrapped = get_object_or_404(DuoWrapped, id=duo_wrapped_id, user=request.user)
+
+    # Extract the stored context data
+    context = duo_wrapped.data
+
+    # Add additional context if needed (e.g., friend information)
+    friend = get_object_or_404(User, id=item_id)
+    context.update({
+        'friend': friend,
+    })
+
+    return render(request, 'view_past_duo.html', context)

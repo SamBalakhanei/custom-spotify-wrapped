@@ -30,6 +30,16 @@ class Wrapped(models.Model):
     desc = models.TextField(default='')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
+class DuoWrapped(models.Model):
+    user = models.ForeignKey(User, related_name='duo_wrapped_user', on_delete=models.CASCADE)
+    friend = models.ForeignKey(User, related_name='duo_wrapped_friend', on_delete=models.CASCADE)
+    data = models.JSONField()  # Store artists, tracks, and other duo-specific data
+    date_created = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Duo Wrapped: {self.user.username} and {self.friend.username} ({self.date_created})"
+
+
 class Friend(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friend_user')
     friend = models.ForeignKey(User, on_delete=models.CASCADE, related_name='friends')

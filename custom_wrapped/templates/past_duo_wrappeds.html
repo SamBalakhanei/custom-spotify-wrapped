@@ -1,0 +1,10 @@
+<h1>Past Duo Wrappeds</h1>
+<ul>
+    {% for duo in past_duos %}
+        <li>
+            <a href="{% url 'view_duo_wrapped_detail' duo.id duo.friend.id %}">
+                {{ duo.friend.username }} ({{ duo.date_created }})
+            </a>
+        </li>
+    {% endfor %}
+</ul>

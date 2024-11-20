@@ -1,0 +1,41 @@
+<!-- templates/slides/duo_artist_slide.html -->
+{% load i18n %}
+<div class="swiper-slide">
+    <div class="p-4 bg-background text-text">
+        <div class="flex justify-around">
+            <!-- User's Artist -->
+            <div class="w-1/2 text-center">
+                <img src="{{ user_artist.image_url }}"
+                     class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg"
+                     alt="{{ user_artist.name }}">
+                <div class="mt-4">
+                    <strong class="text-2xl">
+                        {{ number }}. <a href="{{ user_artist.artist_url }}" class="hover:underline">
+                            {{ user_artist.name }}
+                        </a>
+                    </strong>
+                    <p class="mt-2">
+                        {% trans "Genres: " %}{{ user_artist.genres }}
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Friend's Artist -->
+            <div class="w-1/2 text-center">
+                <img src="{{ friend_artist.image_url }}"
+                     class="w-full h-auto max-w-xs mx-auto object-cover border-2 border-accent rounded-lg"
+                     alt="{{ friend_artist.name }}">
+                <div class="mt-4">
+                    <strong class="text-2xl">
+                        {{ number }}. <a href="{{ friend_artist.artist_url }}" class="hover:underline">
+                            {{ friend_artist.name }}
+                        </a>
+                    </strong>
+                    <p class="mt-2">
+                        {% trans "Genres: " %}{{ friend_artist.genres }}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
