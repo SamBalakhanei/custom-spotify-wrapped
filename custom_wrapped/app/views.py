@@ -581,10 +581,8 @@ def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
     tracks = get_top_tracks(profile, limit, period)
 
     wrapped_data = {
-        # "user_info": get_user_profile(access_token),  # if implementing user intro data
         "top_artists": process_top_artists(artists),
         "top_tracks": process_top_tracks(tracks),
-        # Add more sections as needed
     }
     print(wrapped_data)
     return render(request, 'your_template_name.html', {'wrapped_data': wrapped_data})
@@ -612,10 +610,33 @@ def duo_wrapped(request, friend_id):
         friend_wrapped.data['tracks'].values()
     ))
 
+    # Extract user genres
+    user_genres = []
+    for artist in user_wrapped['artists'].values():  # Use `.values()` to iterate over the dict
+        genres = artist.get("genres", "")  # Genres are stored as a string
+        if genres:
+            user_genres.extend(genres.split(", "))  # Split the genres string into a list
+
+    # Extract friend genres
+    friend_genres = []
+    for artist in friend_wrapped.data['artists'].values():  # Use `.values()` to iterate
+        genres = artist.get("genres", "")
+        if genres:
+            friend_genres.extend(genres.split(", "))
+
+    # Debugging: Print the extracted genres
+    print("USER GENRES = ", user_genres)
+    print("FRIEND GENRES = ", friend_genres)
+
     # Calculate shared genres
-    user_genres = {genre for artist in user_wrapped['artists'].values() for genre in artist['genres']}
-    friend_genres = {genre for artist in friend_wrapped.data['artists'].values() for genre in artist['genres']}
-    shared_genres = user_genres.intersection(friend_genres)
+    user_genres_set = set(user_genres)
+    friend_genres_set = set(friend_genres)
+    shared_genres = user_genres_set.intersection(friend_genres_set)
+
+    print("SHARED GENRES = ", shared_genres)
+
+    # Generate compatibility description
+    compatibility_desc = generate_compat(user_genres, friend_genres)
 
     # Calculate shared tracks
     user_tracks = {track['track_name'] for track in user_wrapped['tracks'].values()}
@@ -631,12 +652,40 @@ def duo_wrapped(request, friend_id):
         'tracks_comparison': tracks_comparison,
         'shared_genres': list(shared_genres),  # Convert set to list
         'shared_tracks': shared_tracks,
+        'compatibility_desc': compatibility_desc,
     }
 
     # Save the DuoWrapped object
     save_duo(request.user, friend, context)
 
     return render(request, 'duo_wrapped.html', context)
+
+
+def generate_compat(user_genres, friend_genres):
+    """
+    Generate a compatibility description based on shared and individual genres.
+    Args:
+        user_genres (list): Genres of the user.
+        friend_genres (list): Genres of the friend.
+
+    Returns:
+        str: A descriptive compatibility string.
+    """
+    model = genai.GenerativeModel("gemini-1.5-flash")
+
+    # Convert genre lists to comma-separated strings for the AI prompt
+    user_genres_str = ", ".join(user_genres)
+    friend_genres_str = ", ".join(friend_genres)
+
+    # Generate compatibility description
+    response = model.generate_content(
+        f"In 100 words or under, tell me how compatible the music tastes are of 'you': {user_genres_str} compared to 'your friend's': {friend_genres_str}. "
+        "Start with 'Based on both of your genres, '. Evaluate all the genres together. Make the sentences flow, and don't use Markdown or add asterisks."
+    )
+
+    return response.text
+
+
 
 
 
