@@ -54,8 +54,8 @@ def save_duo(user, friend, context):
     """
     now = datetime.datetime.now()
 
-    # Check if a DuoWrapped already exists for the same user, friend, and date
-    if DuoWrapped.objects.filter(user=user, friend=friend, date_created=now).exists():
+    # Check if a DuoWrapped already exists for the same user, friend
+    if DuoWrapped.objects.filter(user=user, friend=friend).exists():
         return  # Skip saving if it already exists
 
     # Ensure the data in context is serializable
@@ -624,16 +624,12 @@ def duo_wrapped(request, friend_id):
         if genres:
             friend_genres.extend(genres.split(", "))
 
-    # Debugging: Print the extracted genres
-    print("USER GENRES = ", user_genres)
-    print("FRIEND GENRES = ", friend_genres)
 
     # Calculate shared genres
     user_genres_set = set(user_genres)
     friend_genres_set = set(friend_genres)
     shared_genres = user_genres_set.intersection(friend_genres_set)
 
-    print("SHARED GENRES = ", shared_genres)
 
     # Generate compatibility description
     compatibility_desc = generate_compat(user_genres, friend_genres)
@@ -700,9 +696,17 @@ def view_past_duo_wrappeds(request):
 
 
 @login_required
-def view_duo_wrapped_detail(request, duo_wrapped_id):
+def view_duo_wrapped_detail(request, duo_wrapped_id, item_id):
+    # Fetch the DuoWrapped object using the ID
     duo_wrapped = get_object_or_404(DuoWrapped, id=duo_wrapped_id, user=request.user)
 
+    # Extract the stored context data
     context = duo_wrapped.data
 
-    return render(request, 'duo_wrapped.html', context)
+    # Add additional context if needed (e.g., friend information)
+    friend = get_object_or_404(User, id=item_id)
+    context.update({
+        'friend': friend,
+    })
+
+    return render(request, 'view_past_duo.html', context)
