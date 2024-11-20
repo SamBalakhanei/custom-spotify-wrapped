@@ -13,11 +13,17 @@
 {% endblock extra_css %}
 
 {% block content %}
+    <a href="{% url 'index' %}" class="flex-1">
+        <button class="flex flex-col items-center justify-center w-32 focus:outline-none text-text bg-accent font-medium rounded-lg text-sm px-4 py-2">
+            <p class="text-center">{% trans "Back" %}</p>
+        </button>
+    </a>
     <h1 class="text-4xl text-center font-bold p-10 text-text">
         {% trans "Your Spotify Wrapped" %}
     </h1>
     
-    <div class="swiper mt-8 max-w-lg mx-auto border-4 border-accent rounded-lg">
+    
+    <div class="swiper m-6 max-w-lg mx-auto border-4 border-accent rounded-lg" style="height:auto">
         <div class="swiper-wrapper">
             <!-- Slide 1: Welcome -->
             <div class="swiper-slide text-center text-text text-xl">
@@ -28,11 +34,11 @@
                     {% else %}
                         <strong>No profile picture available.</strong>
                     {% endif %}
-                <p class="mt-2">Welcome to your Spotify Wrapped...</p></div>
+                <p class="m-6">Welcome to your Spotify Wrapped!</p></div>
 
             <!-- Slide 2: Introduction to Top Artists -->
             <div class="swiper-slide text-center text-text">
-                <p class="mt-8 mx-6 text-xl justify-center">You listened to many different artists, but there were 5 that stood out:</p>
+                <p class="m-6 mx-6 text-xl justify-center">You listened to many different artists, but there were 5 that stood out:</p>
             </div>
 
             {% if top_artists %}
@@ -53,7 +59,7 @@
 
             <!-- Slide 8: Introduction to Top Tracks -->
             <div class="swiper-slide text-center text-text">
-                <p class="mt-4 text-xl">Now onto your top tracks:</p></div>
+                <p class="m-6 text-xl">Now onto your top tracks:</p></div>
 
             {% if top_tracks %}
                 <!-- Slides 9-13: Top 5 Tracks -->
@@ -133,6 +139,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             new Swiper('.swiper', {
                 loop: true,
+                autoHeight: true,
                 slidesPerView: 1, // Display one slide at a time
                 spaceBetween: 30, // Space between slides in px
                 pagination: {
@@ -143,7 +150,23 @@
                     nextEl: '.swiper-button-next',
                     prevEl: '.swiper-button-prev',
                 },
-            });
+                on: {
+                    slideChange: function () {
+                        // Pause all audio elements
+                        document.querySelectorAll('[swiper-audio]').forEach(audio => {
+                            audio.pause();
+                            audio.currentTime = 0; // Optional: Reset playback to the beginning
+                        });
+
+                        // Play the audio element in the currently active slide
+                        const activeSlide = this.slides[this.activeIndex];
+                        const audioElement = activeSlide.querySelector('[swiper-audio]');
+                        if (audioElement) {
+                            audioElement.play();
+                        }
+                    },
+                }
+                });
         });
     </script>
 {% endblock extra_js %}

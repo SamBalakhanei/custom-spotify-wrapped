@@ -36,7 +36,7 @@
                 </a>
             </div>
             {% if track.mp3_preview_url %}
-                <audio controls class="w-full bg-gray-800 rounded-lg p-2">
+                <audio controls loop class="w-full bg-gray-800 rounded-lg p-2" swiper-audio>
                     <source src="{{ track.mp3_preview_url }}" type="audio/mpeg">
                     {% trans "Your browser does not support the audio element." %}
                 </audio>
