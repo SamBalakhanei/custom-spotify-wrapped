@@ -6,6 +6,7 @@
     html[data-theme='dark'] {
         --color-background: #121212;
         --color-accent: #1DB954;
+        --color-b2: #1DB954;
         --color-text: #FFFFFF;
         --color-background-text: #B3B3B3;
         --color-dark-accent: #000000;
@@ -15,6 +16,7 @@
     html[data-theme='light'] {
         --color-background: #FFFFFF;
         --color-accent: #1DB954;
+        --color-b2: #1DB954;
         --color-text: #272727;
         --color-background-text: #434343;
         --color-dark-accent: #026c27;
@@ -24,6 +26,7 @@
     html[data-theme='halloween'] {
         --color-background: #121212;
         --color-accent: #d08700;
+        --color-b2: #d08700;
         --color-text: #FFFFFF;
         --color-background-text: #B3B3B3;
         --color-dark-accent: #000000;
@@ -33,6 +36,7 @@
     html[data-theme='christmas'] {
         --color-background: #092e35;
         --color-accent: #b00909;
+        --color-b2: #23b861;
         --color-text: #FFFFFF;
         --color-background-text: #B3B3B3;
         --color-dark-accent: #000000;
