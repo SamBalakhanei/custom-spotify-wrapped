@@ -16,15 +16,15 @@
     <div class="flex space-x-4 items-center justify-center">
     <div class="p-10 flex space-x-4 items-center justify-center w-1/3">
         <a href="{% url 'wrapped' limit=10 period='short_term' %}" class="flex-1">
-            <button class="rounded-lg bg-accent p-2 w-32"><p class="text-text">1 Month</p></button>
+            <button class="rounded-lg bg-accent p-2 w-32"><p class="text-text">{% trans "1 Month" %}</p></button>
         </a>
 
         <a href="{% url 'wrapped' limit=10 period='medium_term' %}" class="flex-1">
-            <button class="rounded-lg bg-accent p-2 w-32"><p class="text-text">6 Months</p></button>
+            <button class="rounded-lg bg-accent p-2 w-32"><p class="text-text">{% trans "6 Months" %}</p></button>
         </a>
 
         <a href="{% url 'wrapped' limit=10 period='long_term' %}" class="flex-1">
-            <button class="rounded-lg bg-accent p-2 w-32"><p class="text-text">1 Year</p></button>
+            <button class="rounded-lg bg-accent p-2 w-32"><p class="text-text">{% trans "1 Year" %}</p></button>
         </a>
     </div>
     </div>
