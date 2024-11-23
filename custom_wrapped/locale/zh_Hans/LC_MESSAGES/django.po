@@ -31,240 +31,338 @@ msgstr ""
 
 #: templates/_base.html:28
 msgid "Theme"
-msgstr ""
+msgstr "主题"
 
 #: templates/_base.html:30
 msgid "Dark"
-msgstr ""
+msgstr "暗黑"
 
 #: templates/_base.html:31
 msgid "Light"
-msgstr ""
+msgstr "明亮"
 
 #: templates/_base.html:32
 msgid "Halloween"
-msgstr ""
+msgstr "万圣节"
 
 #: templates/_base.html:33
 msgid "Christmas"
-msgstr ""
+msgstr "圣诞节"
 
 #: templates/contact_us.html:6 templates/contact_us.html:9
 #: templates/index.html:98
 msgid "Contact Us"
-msgstr ""
+msgstr "联系我们"
 
 #: templates/contact_us.html:10
 msgid "Meet Our Developers!"
-msgstr ""
+msgstr "认识我们的开发者！"
 
 #: templates/contact_us.html:13 templates/contact_us.html:19
 #: templates/contact_us.html:22
 msgid "Full-Stack"
-msgstr ""
+msgstr "全栈"
 
 #: templates/contact_us.html:16 templates/contact_us.html:25
 msgid "Backend"
-msgstr ""
+msgstr "后端"
 
 #: templates/contact_us.html:26
 msgid "Send Us Feedback"
-msgstr ""
+msgstr "给我们反馈"
 
 #: templates/index.html:4
 msgid "Home - Spotify Wrapped"
-msgstr ""
+msgstr "首页 - Spotify Wrapped"
 
 #: templates/index.html:8
 msgid "Welcome to Spotify Wrapped, "
-msgstr ""
+msgstr "欢迎来到 Spotify Wrapped，"
 
 #: templates/index.html:9 templates/index.html:69
 msgid "Generate customized summaries of your Spotify listening history."
-msgstr ""
+msgstr "生成您 Spotify 听歌历史的个性化总结。"
 
 #: templates/index.html:20
 msgid "Logout"
-msgstr ""
+msgstr "注销"
 
 #: templates/index.html:30
 msgid "Get Wrapped"
-msgstr ""
+msgstr "获取 Wrapped"
 
 #: templates/index.html:41 templates/past_wraps.html:6
 msgid "Past Wraps"
-msgstr ""
+msgstr "历史 Wrapped"
 
 #: templates/index.html:50
 msgid "Profile"
-msgstr ""
+msgstr "个人资料"
 
 #: templates/index.html:61
 msgid "Login with Spotify"
-msgstr ""
+msgstr "使用 Spotify 登录"
 
 #: templates/index.html:68
 msgid "Welcome to Spotify Wrapped."
-msgstr ""
+msgstr "欢迎来到 Spotify Wrapped。"
 
 #: templates/index.html:78 templates/register.html:5 templates/register.html:8
 #: templates/register.html:12
 msgid "Register"
-msgstr ""
+msgstr "注册"
 
 #: templates/index.html:88 templates/login.html:5 templates/login.html:8
 #: templates/login.html:12
 msgid "Login"
-msgstr ""
+msgstr "登录"
 
 #: templates/past_wraps.html:10
 msgid "Back"
-msgstr ""
+msgstr "返回"
 
 #: templates/past_wraps.html:25
 msgid "You have no past wraps."
-msgstr ""
+msgstr "您没有历史 Wrapped"
 
 #: templates/profile.html:7
 msgid "This is "
-msgstr ""
+msgstr "这是 "
 
 #: templates/profile.html:7
 msgid "'s profile."
-msgstr ""
+msgstr "的个人资料。"
 
 #: templates/profile.html:12
 msgid "Go Back"
-msgstr ""
+msgstr "返回"
 
 #: templates/profile.html:20
 msgid "Past Wrappeds"
-msgstr ""
+msgstr "历史 Wrapped"
 
 #: templates/profile.html:25
 msgid "Delete Account"
-msgstr ""
+msgstr "删除账户"
 
 #: templates/profile.html:38
 msgid "Enter username"
-msgstr ""
+msgstr "输入用户名"
 
 #: templates/profile.html:39
 msgid "Add"
-msgstr ""
+msgstr "添加"
 
 #: templates/profile.html:45
 msgid "Outgoing Requests"
-msgstr ""
+msgstr "发出的请求"
 
 #: templates/profile.html:50
 msgid "Cancel"
-msgstr ""
+msgstr "取消"
 
 #: templates/profile.html:53
 msgid "No outgoing requests"
-msgstr ""
+msgstr "没有发出的请求"
 
 #: templates/profile.html:60
 msgid "Incoming Requests"
-msgstr ""
+msgstr "收到的请求"
 
 #: templates/profile.html:65
 msgid "Accept"
-msgstr ""
+msgstr "接受"
 
 #: templates/profile.html:66
 msgid "Deny"
-msgstr ""
+msgstr "拒绝"
 
 #: templates/profile.html:69
 msgid "No incoming requests"
-msgstr ""
+msgstr "没有收到的请求"
 
 #: templates/profile.html:76
 msgid "Friends"
-msgstr ""
+msgstr "朋友"
 
 #: templates/profile.html:83 templates/profile.html:94
 msgid "View Duo-Wrapped"
-msgstr ""
+msgstr "查看 Duo-Wrapped"
 
 #: templates/profile.html:103
 msgid "No friends"
-msgstr ""
+msgstr "没有朋友"
 
 #: templates/profile.html:110
 msgid "You need to log in to view your profile."
-msgstr ""
+msgstr "您需要登录才能查看您的个人资料。"
 
 #: templates/view_past_wrap.html:6
-msgid "Your Spotify Wrappeded"
-msgstr ""
+msgid "Your Spotify Wrapped"
+msgstr "您的 Spotify Wrapped"
 
 #: templates/view_past_wrap.html:14 templates/wrapped.html:14
 msgid "Your Top Spotify Artists"
-msgstr ""
+msgstr "您最喜欢的 Spotify 艺术家"
 
 #: templates/view_past_wrap.html:27 templates/wrapped.html:27
 msgid "Genres: "
-msgstr ""
+msgstr "类型："
 
 #: templates/view_past_wrap.html:33 templates/wrapped.html:33
 msgid "No artists found for this period."
-msgstr ""
+msgstr "此期间未找到艺术家。"
 
 #: templates/view_past_wrap.html:62 templates/wrapped.html:62
 msgid "Album: "
-msgstr ""
+msgstr "专辑："
 
 #: templates/view_past_wrap.html:63 templates/wrapped.html:63
 msgid "Released on: "
-msgstr ""
+msgstr "发布日期："
 
 #: templates/view_past_wrap.html:67 templates/wrapped.html:67
 msgid "Listen on Spotify"
-msgstr ""
+msgstr "在 Spotify 上收听"
 
 #: templates/view_past_wrap.html:73 templates/wrapped.html:73
 msgid "Your browser does not support the audio element."
-msgstr ""
+msgstr "您的浏览器不支持音频元素。"
 
 #: templates/view_past_wrap.html:76 templates/wrapped.html:76
 msgid "No preview available for this track."
-msgstr ""
+msgstr "此曲目没有预览。"
 
 #: templates/view_past_wrap.html:83 templates/wrapped.html:83
 msgid "No tracks found for this period."
-msgstr ""
+msgstr "此期间未找到曲目。"
 
 #: templates/wrapped.html:6
 msgid "Your Spotify Wraooed"
-msgstr ""
+msgstr "您的 Spotify Wrapped"
 
 #: forms.py
 msgid "Email"
-msgstr ""
+msgstr "电子邮件"
 
 msgid "Username"
-msgstr ""
+msgstr "用户名"
 
 msgid "Password"
-msgstr ""
+msgstr "密码"
 
 msgid "Retype password"
-msgstr ""
+msgstr "重新输入密码"
 
 msgid "An account with this email already exists."
-msgstr ""
+msgstr "此电子邮件已注册账户。"
 
 msgid "An account with this username already exists."
-msgstr ""
+msgstr "此用户名已注册账户。"
 
 msgid "Form is not valid. Cannot save user."
-msgstr ""
+msgstr "表单无效，无法保存用户。"
 
 msgid "Register for Spotify Wrapped"
-msgstr ""
+msgstr "注册 Spotify Wrapped"
 
 msgid "Login to Spotify Wrapped"
-msgstr ""
+msgstr "登录 Spotify Wrapped"
+
+#: select_period.html
+msgid "1 Month"
+msgstr "1 个月"
+
+msgid "6 Months"
+msgstr "6 个月"
+
+msgid "1 Year"
+msgstr "1 年"
+
+msgid "Past Solo Wrappeds"
+msgstr "过去的个人 Wrapped"
+
+msgid "Past Duo-Wrappeds"
+msgstr "过去的 Duo Wrapped"
+
+#: duo_wrapped.html
+msgid "Duo Wrapped"
+msgstr "Duo Wrapped"
+
+msgid "Duo Wrapped: "
+msgstr "Duo Wrapped: "
+
+msgid "This is a comparison of your Spotify Wrapped with your friend!"
+msgstr "这是你与朋友的 Spotify Wrapped 比较！"
+
+msgid "Top Artists Comparison"
+msgstr "最喜欢艺术家的比较"
+
+msgid "Top Tracks Comparison"
+msgstr "最喜欢歌曲的比较"
+
+msgid "Compatibility Report"
+msgstr "兼容性报告"
+
+msgid "In Summary"
+msgstr "总结"
+
+msgid "Shared Top Genres"
+msgstr "共同的热门音乐类型"
+
+msgid "Shared Favorite Tracks"
+msgstr "共同的最爱歌曲"
+
+#: error.html
+msgid "Error"
+msgstr "错误"
+
+msgid "Go Back to Home"
+msgstr "返回主页"
+
+#: login.html
+#: register.html
+msgid "Please wait..."
+msgstr "请稍等..."
+
+#: past_wraps.html
+msgid "Date"
+msgstr "日期"
+
+msgid "Period"
+msgstr "时间段"
+
+msgid "Delete"
+msgstr "删除"
+
+#: select_period.html
+msgid "Select Time Period"
+msgstr "选择时间段"
+
+#: view_past_wrap.html
+msgid "No profile picture available."
+msgstr "没有可用的个人资料图片。"
+
+msgid "Welcome to your Spotify Wrapped..."
+msgstr "欢迎来到你的 Spotify Wrapped..."
+
+msgid "You listened to many different artists, but there were 5 that stood out:"
+msgstr "你听了很多不同的艺术家，但有 5 个脱颖而出："
+
+msgid "Personalized Summary"
+msgstr "个性化总结"
+
+msgid "Now onto your top tracks:"
+msgstr "现在来看你的最爱歌曲："
+
+msgid "Top 10 Artists"
+msgstr "最喜爱的 10 位艺术家"
+
+msgid "Top 10 Tracks"
+msgstr "最喜爱的 10 首歌曲"
+
+msgid "Top Genre"
+msgstr "最喜爱的音乐类型"
+
+msgid "Welcome to your Spotify Wrapped!"
+msgstr "欢迎来到你的 Spotify Wrapped！"

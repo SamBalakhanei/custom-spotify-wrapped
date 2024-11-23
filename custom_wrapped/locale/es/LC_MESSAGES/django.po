@@ -199,7 +199,7 @@ msgid "You need to log in to view your profile."
 msgstr "Necesitas iniciar sesión para ver tu perfil"
 
 #: templates/view_past_wrap.html:6
-msgid "Your Spotify Wrappeded"
+msgid "Your Spotify Wrapped"
 msgstr "Tu Spotify Wrapped"
 
 #: templates/view_past_wrap.html:14 templates/wrapped.html:14
@@ -269,3 +269,102 @@ msgstr "Regístrate para Spotify Wrapped"
 
 msgid "Login to Spotify Wrapped"
 msgstr "Inicia sesión en Spotify Wrapped"
+
+
+#: select_period.html
+msgid "1 Month"
+msgstr "1 Mes"
+
+msgid "6 Months"
+msgstr "6 Meses"
+
+msgid "1 Year"
+msgstr "1 Año"
+
+msgid "Past Solo Wrappeds"
+msgstr "Wraps Individuales Pasados"
+
+msgid "Past Duo-Wrappeds"
+msgstr "Wraps Duo Pasados"
+
+#: duo_wrapped.html
+msgid "Duo Wrapped"
+msgstr "Duo Wrapped"
+
+msgid "Duo Wrapped: "
+msgstr "Duo Wrapped: "
+
+msgid "This is a comparison of your Spotify Wrapped with your friend!"
+msgstr "¡Esta es una comparación de tu Spotify Wrapped con el de tu amigo!"
+
+msgid "Top Artists Comparison"
+msgstr "Comparación de Artistas Principales"
+
+msgid "Top Tracks Comparison"
+msgstr "Comparación de Pistas Principales"
+
+msgid "Compatibility Report"
+msgstr "Informe de Compatibilidad"
+
+msgid "In Summary"
+msgstr "En Resumen"
+
+msgid "Shared Top Genres"
+msgstr "Géneros Principales Compartidos"
+
+msgid "Shared Favorite Tracks"
+msgstr "Pistas Favoritas Compartidas"
+
+#: error.html
+msgid "Error"
+msgstr "Error"
+
+msgid "Go Back to Home"
+msgstr "Volver a Inicio"
+
+#: login.html
+#: register.html
+msgid "Please wait..."
+msgstr "Por favor espera..."
+
+#: past_wraps.html
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Period"
+msgstr "Período"
+
+msgid "Delete"
+msgstr "Eliminar"
+
+#: select_period.html
+msgid "Select Time Period"
+msgstr "Seleccionar Período de Tiempo"
+
+#: view_past_wrap.html
+msgid "No profile picture available."
+msgstr "No hay foto de perfil disponible."
+
+msgid "Welcome to your Spotify Wrapped..."
+msgstr "Bienvenido a tu Spotify Wrapped..."
+
+msgid "You listened to many different artists, but there were 5 that stood out:"
+msgstr "Escuchaste a muchos artistas diferentes, pero hubo 5 que se destacaron:"
+
+msgid "Personalized Summary"
+msgstr "Resumen Personalizado"
+
+msgid "Now onto your top tracks:"
+msgstr "Ahora, tus pistas principales:"
+
+msgid "Top 10 Artists"
+msgstr "Top 10 Artistas"
+
+msgid "Top 10 Tracks"
+msgstr "Top 10 Pistas"
+
+msgid "Top Genre"
+msgstr "Género Principal"
+
+msgid "Welcome to your Spotify Wrapped!"
+msgstr "¡Bienvenido a tu Spotify Wrapped!"
