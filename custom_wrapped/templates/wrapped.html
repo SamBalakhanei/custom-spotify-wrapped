@@ -46,13 +46,13 @@
                         <img src="{{ user_profile.profile_picture }}" alt="User Profile Picture"
                              class="w-32 h-32 mx-auto rounded-full mt-4">
                     {% else %}
-                        <strong>No profile picture available.</strong>
+                        <strong>{% trans "No profile picture available." %}</strong>
                     {% endif %}
-                <p class="m-6">Welcome to your Spotify Wrapped!</p></div>
+                <p class="m-6">{% trans "Welcome to your Spotify Wrapped!" %}</p></div>
 
             <!-- Slide 2: Introduction to Top Artists -->
             <div class="swiper-slide text-center text-text">
-                <p class="m-6 mx-6 text-xl justify-center">You listened to many different artists, but there were 5 that stood out:</p>
+                <p class="m-6 mx-6 text-xl justify-center">{% trans "You listened to many different artists, but there were 5 that stood out:" %}</p>
             </div>
 
             {% if top_artists %}
@@ -73,7 +73,7 @@
 
             <!-- Slide 8: Introduction to Top Tracks -->
             <div class="swiper-slide text-center text-text">
-                <p class="m-6 text-xl">Now onto your top tracks:</p></div>
+                <p class="m-6 text-xl">{% trans "Now onto your top tracks:" %}</p></div>
 
             {% if top_tracks %}
                 <!-- Slides 9-13: Top 5 Tracks -->
@@ -94,7 +94,7 @@
             <!-- New Slide for Gemini-generated Summary -->
             <div class="swiper-slide text-center text-text">
                 <div class="p-4">
-                    <h2 class="text-2xl font-bold mb-4">Personalized Summary</h2>
+                    <h2 class="text-2xl font-bold mb-4">{% trans "Personalized Summary" %}</h2>
                     <p class="text-lg">{{ desc }}</p>
                 </div>
             </div>
@@ -102,18 +102,18 @@
             <!-- Slide 14: Final Summary Slide -->
             <div class="swiper-slide text-center text-text">
                 <div class="p-4">
-                    <h2 class="text-3xl font-bold mb-4">In Summary</h2> <!-- Larger title text -->
+                    <h2 class="text-3xl font-bold mb-4">{% trans "In Summary" %}</h2> <!-- Larger title text -->
 
                     <!-- Profile Picture -->
                     {% if user_profile.profile_picture %}
                         <img src="{{ user_profile.profile_picture }}" alt="User Profile Picture"
                              class="w-32 h-32 mx-auto rounded-full mt-4">
                     {% else %}
-                        <strong>No profile picture available.</strong>
+                        <strong>{% trans "No profile picture available." %}</strong>
                     {% endif %}
 
                     <!-- Top 10 Artists -->
-                    <h3 class="text-2xl font-semibold mt-8 mb-2">Top 10 Artists</h3> <!-- Larger heading for artists -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-2">{% trans "Top 10 Artists" %}</h3> <!-- Larger heading for artists -->
                     <ol class="list-decimal list-inside text-lg">
                         {% for artist in top_artists.values %}
                             <li><a href="{{ artist.artist_link }}"
@@ -122,7 +122,7 @@
                     </ol>
 
                     <!-- Top 10 Tracks -->
-                    <h3 class="text-2xl font-semibold mt-8 mb-2">Top 10 Tracks</h3> <!-- Larger heading for tracks -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-2">{% trans "Top 10 Tracks" %}</h3> <!-- Larger heading for tracks -->
                     <ol class="list-decimal list-inside text-lg">
                         {% for track in top_tracks.values %}
                             <li><a href="{{ track.track_url }}"
@@ -131,7 +131,7 @@
                     </ol>
 
                     <!-- Top Genre -->
-                    <h3 class="text-2xl font-semibold mt-8 mb-2">Top Genre</h3> <!-- Larger heading for genre -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-2">{% trans "Top Genre" %}</h3> <!-- Larger heading for genre -->
                     <p class="text-lg">{{ top_genre }}</p> <!-- Larger text for genre -->
                 </div>
             </div>
