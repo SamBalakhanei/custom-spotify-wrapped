@@ -11,7 +11,8 @@ module.exports = {
       darkAccent: 'var(--color-dark-accent)',
       hover: 'var(--color-hover)',
       white: '#FFFFFF',
-      green: '#1DB954'
+      green: '#1DB954',
+      b2: 'var(--color-b2)'
     },
     container: {
       center: true,

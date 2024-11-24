@@ -13,6 +13,11 @@
 {% endblock extra_css %}
 
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<script src="{% static 'JS/snow-init.js' %}"></script>
+<div id="ghostImage" data-image-url="{% static 'imgs/ghost-outline-png.webp' %}" alt="Ghost Outline">
+<script src="{% static 'JS/ghost-init.js' %}"></script>
+
     <a href="{% url 'index' %}" class="flex-1">
         <button class="flex flex-col items-center justify-center w-32 focus:outline-none text-text bg-accent font-medium rounded-lg text-sm px-4 py-2">
             <p class="text-center">{% trans "Back" %}</p>
@@ -21,9 +26,10 @@
     <h1 class="text-4xl text-center font-bold p-10 text-text">
         {% trans "Your Spotify Wrapped" %}
     </h1>
-    
+
     
     <div class="swiper m-6 max-w-lg mx-auto border-4 border-accent rounded-lg" style="height:auto">
+
         <div class="swiper-wrapper">
             <!-- Slide 1: Welcome -->
             <div class="swiper-slide text-center text-text text-xl">
