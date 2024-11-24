@@ -15,6 +15,8 @@
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <script src="{% static 'JS/snow-init.js' %}"></script>
+<img id="ghostImage" data-image-url="{% static 'imgs/ghost-outline-png.webp' %}" alt="Ghost Outline">
+<script src="{% static 'JS/ghost-init.js' %}"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
