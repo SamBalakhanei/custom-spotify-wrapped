@@ -1,10 +1,57 @@
-<h1>Past Duo Wrappeds</h1>
-<ul>
-    {% for duo in past_duos %}
-        <li>
-            <a href="{% url 'view_duo_wrapped_detail' duo.id duo.friend.id %}">
-                {{ duo.friend.username }} ({{ duo.date_created }})
-            </a>
-        </li>
-    {% endfor %}
-</ul>
+{% extends "_base.html" %}
+{% load i18n %}
+{% load compress %}
+{% load static %}
+
+{% block title %}{% trans "Past Duo Wrappeds" %}{% endblock title %}
+{% block content %}
+    <!-- Back Button -->
+    <a href="{% url 'profile' %}" class="flex-1">
+        <button class="flex flex-col items-center justify-center w-32 focus:outline-none text-text bg-accent font-medium rounded-lg text-sm px-4 py-2">
+            <p class="text-center">{% trans "Back" %}</p>
+        </button>
+    </a>
+
+    {% if past_duos %}
+    <div class="table w-full mt-4">
+        <!-- Table Header -->
+        <div class="table-header-group bg-accent">
+            <div class="table-row text-text pl-2">
+                <div class="table-cell text-left">{% trans "Friend" %}</div>
+                <div class="table-cell text-left">{% trans "Date" %}</div>
+                <div class="table-cell text-left">{% trans "Actions" %}</div>
+            </div>
+        </div>
+        <div class="table-row-group">
+        {% for duo in past_duos %}
+            <!-- Table Rows -->
+            <div class="text-text table-row text-left py-2.5">
+                <div class="table-cell">
+                    <p class="text-text">{{ duo.friend.username }}</p>
+                </div>
+                <div class="table-cell">
+                    <p class="text-text">{{ duo.date_created|date:"F j, Y, g:i a" }}</p>
+                </div>
+                <div class="table-cell flex items-center space-x-2">
+                    <!-- View Button -->
+                    <a href="{% url 'view_duo_wrapped_detail' duo.id duo.friend.id %}">
+                        <button class="text-text bg-green font-medium rounded-lg text-sm px-4 py-2">
+                            {% trans "View" %}
+                        </button>
+                    </a>
+                    <!-- Delete Button -->
+                    <a href="{% url 'delete_duo_wrapped' duo.id %}">
+                        <button class="text-text font-medium rounded-lg text-sm px-4 py-2" style="background-color: red">
+                            {% trans "Delete" %}
+                        </button>
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    {% else %}
+        <!-- No Duo Wrappeds Message -->
+        <span class="text-text bg-accent">{% trans "You have no past duo wrappeds." %}</span>
+    {% endif %}
+{% endblock content %}
