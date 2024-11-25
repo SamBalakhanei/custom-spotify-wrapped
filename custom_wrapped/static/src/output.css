@@ -557,6 +557,7 @@ video {
 html[data-theme='dark'] {
   --color-background: #121212;
   --color-accent: #1DB954;
+  --color-b2: #1DB954;
   --color-text: #FFFFFF;
   --color-background-text: #B3B3B3;
   --color-dark-accent: #000000;
@@ -566,6 +567,7 @@ html[data-theme='dark'] {
 html[data-theme='light'] {
   --color-background: #FFFFFF;
   --color-accent: #1DB954;
+  --color-b2: #1DB954;
   --color-text: #272727;
   --color-background-text: #434343;
   --color-dark-accent: #026c27;
@@ -575,6 +577,7 @@ html[data-theme='light'] {
 html[data-theme='halloween'] {
   --color-background: #121212;
   --color-accent: #d08700;
+  --color-b2: #d08700;
   --color-text: #FFFFFF;
   --color-background-text: #B3B3B3;
   --color-dark-accent: #000000;
@@ -584,6 +587,7 @@ html[data-theme='halloween'] {
 html[data-theme='christmas'] {
   --color-background: #092e35;
   --color-accent: #b00909;
+  --color-b2: #23b861;
   --color-text: #FFFFFF;
   --color-background-text: #B3B3B3;
   --color-dark-accent: #000000;
@@ -630,8 +634,21 @@ html[data-theme='christmas'] {
   position: static;
 }
 
+.absolute {
+  position: absolute;
+}
+
 .float-right {
   float: right;
+}
+
+.m-6 {
+  margin: 1.5rem;
+}
+
+.mx-6 {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
 }
 
 .mx-auto {
@@ -652,6 +669,10 @@ html[data-theme='christmas'] {
   margin-bottom: 1rem;
 }
 
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
 .me-2 {
   margin-inline-end: 0.5rem;
 }
@@ -660,12 +681,28 @@ html[data-theme='christmas'] {
   margin-left: 0.5rem;
 }
 
+.ml-6 {
+  margin-left: 1.5rem;
+}
+
+.mr-6 {
+  margin-right: 1.5rem;
+}
+
+.mt-10 {
+  margin-top: 2.5rem;
+}
+
 .mt-2 {
   margin-top: 0.5rem;
 }
 
 .mt-4 {
   margin-top: 1rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
 }
 
 .mt-8 {
@@ -684,13 +721,45 @@ html[data-theme='christmas'] {
   display: flex;
 }
 
+.table {
+  display: table;
+}
+
+.table-cell {
+  display: table-cell;
+}
+
+.table-header-group {
+  display: table-header-group;
+}
+
+.table-row-group {
+  display: table-row-group;
+}
+
+.table-row {
+  display: table-row;
+}
+
 .flow-root {
   display: flow-root;
+}
+
+.grid {
+  display: grid;
 }
 
 .size-12 {
   width: 3rem;
   height: 3rem;
+}
+
+.h-32 {
+  height: 8rem;
+}
+
+.h-40 {
+  height: 10rem;
 }
 
 .h-5 {
@@ -709,8 +778,20 @@ html[data-theme='christmas'] {
   width: 50%;
 }
 
+.w-1\/3 {
+  width: 33.333333%;
+}
+
+.w-10 {
+  width: 2.5rem;
+}
+
 .w-32 {
   width: 8rem;
+}
+
+.w-40 {
+  width: 10rem;
 }
 
 .w-5 {
@@ -719,6 +800,10 @@ html[data-theme='christmas'] {
 
 .w-full {
   width: 100%;
+}
+
+.max-w-4xl {
+  max-width: 56rem;
 }
 
 .max-w-lg {
@@ -737,8 +822,16 @@ html[data-theme='christmas'] {
   list-style-position: inside;
 }
 
+.list-decimal {
+  list-style-type: decimal;
+}
+
 .list-disc {
   list-style-type: disc;
+}
+
+.grid-cols-1 {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
 .flex-row {
@@ -757,16 +850,28 @@ html[data-theme='christmas'] {
   justify-content: center;
 }
 
-.space-x-4 > :not([hidden]) ~ :not([hidden]) {
-  --tw-space-x-reverse: 0;
-  margin-right: calc(1rem * var(--tw-space-x-reverse));
-  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+.justify-around {
+  justify-content: space-around;
+}
+
+.gap-8 {
+  gap: 2rem;
 }
 
 .space-x-2 > :not([hidden]) ~ :not([hidden]) {
   --tw-space-x-reverse: 0;
   margin-right: calc(0.5rem * var(--tw-space-x-reverse));
   margin-left: calc(0.5rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.space-x-4 > :not([hidden]) ~ :not([hidden]) {
+  --tw-space-x-reverse: 0;
+  margin-right: calc(1rem * var(--tw-space-x-reverse));
+  margin-left: calc(1rem * calc(1 - var(--tw-space-x-reverse)));
+}
+
+.rounded {
+  border-radius: 0.25rem;
 }
 
 .rounded-2xl {
@@ -805,6 +910,10 @@ html[data-theme='christmas'] {
   background-color: var(--color-accent);
 }
 
+.bg-b2 {
+  background-color: var(--color-b2);
+}
+
 .bg-background {
   background-color: var(--color-background);
 }
@@ -840,6 +949,10 @@ html[data-theme='christmas'] {
   padding: 1.25rem;
 }
 
+.p-8 {
+  padding: 2rem;
+}
+
 .px-2 {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
@@ -870,8 +983,16 @@ html[data-theme='christmas'] {
   padding-bottom: 0.625rem;
 }
 
+.pb-10 {
+  padding-bottom: 2.5rem;
+}
+
 .pl-1 {
   padding-left: 0.25rem;
+}
+
+.pl-2 {
+  padding-left: 0.5rem;
 }
 
 .pr-1 {
@@ -884,6 +1005,10 @@ html[data-theme='christmas'] {
 
 .pt-10 {
   padding-top: 2.5rem;
+}
+
+.text-left {
+  text-align: left;
 }
 
 .text-center {
@@ -903,14 +1028,29 @@ html[data-theme='christmas'] {
   line-height: 2rem;
 }
 
+.text-3xl {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
 .text-4xl {
   font-size: 2.25rem;
   line-height: 2.5rem;
 }
 
+.text-lg {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
 .text-sm {
   font-size: 0.875rem;
   line-height: 1.25rem;
+}
+
+.text-xl {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
 }
 
 .font-bold {
@@ -919,6 +1059,10 @@ html[data-theme='christmas'] {
 
 .font-medium {
   font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
 }
 
 .text-text {
@@ -957,4 +1101,16 @@ html[data-theme='christmas'] {
   --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
   --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
   box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+@media (min-width: 768px) {
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }

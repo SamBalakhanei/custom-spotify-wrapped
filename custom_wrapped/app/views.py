@@ -639,6 +639,18 @@ def delete_wrapped(request, item_id):
     Wrapped.objects.get(id=item_id).delete()
     return get_past_wrappeds(request)
 
+
+def delete_duo_wrapped(request, duo_id):
+    """
+    Deletes selected saved Duo Wrapped.
+    :param request:
+    :param duo_id: ID of the DuoWrapped object to delete.
+    :return:
+    """
+    duo_wrapped = get_object_or_404(DuoWrapped, id=duo_id, user=request.user)
+    duo_wrapped.delete()
+    return redirect('past_duo_wrappeds')
+
 def select_period(request):
     """
     Renders page for selection time period

@@ -52,4 +52,6 @@ urlpatterns = [
     path('delete_account/', views.delete_account, name='delete_account'),
     path('delete_wrapped/<int:item_id>/', views.delete_wrapped, name='delete_wrapped'),
 path('select_period/', views.select_period, name='select_period'),
+path('delete_duo_wrapped/<int:duo_id>/', views.delete_duo_wrapped, name='delete_duo_wrapped'),
+
 ]
