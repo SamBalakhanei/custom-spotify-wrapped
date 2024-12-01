@@ -63,7 +63,7 @@ def save_duo(user, friend, context):
     now = datetime.datetime.now()
 
     # Check if a DuoWrapped already exists for the same user, friend
-    if DuoWrapped.objects.filter(user=user, friend=friend).exists():
+    if DuoWrapped.objects.filter(user=user, friend=friend, date_created=now).exists():
         return  # Skip saving if it already exists
 
     # Ensure the data in context is serializable
