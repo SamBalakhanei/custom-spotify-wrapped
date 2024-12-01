@@ -555,6 +555,7 @@ def display_wrapped(request, limit, period):
                        'desc': desc,
                        'top_genre': top_genre,
                        'user_profile': user_profile,
+                       'is_december': now.month == 12
                        }
         else:
             error_data = {

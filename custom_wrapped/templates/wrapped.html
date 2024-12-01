@@ -174,16 +174,18 @@
                 }
                 });
         });
+        
+        
         document.addEventListener('DOMContentLoaded', function () {
-            const isDecember = {{ is_december|yesno:"true,false" }};
-            console.log("Is December:", {{is_december}});
-
-            if (isDecember === "true") {
+            {% if is_december %}
                 const selectedTheme = 'christmas';
                 document.documentElement.setAttribute('data-theme', selectedTheme);
                 localStorage.setItem('selectedTheme', selectedTheme);
+                document.getElementById('themes').value = selectedTheme;
                 console.log("Theme set to Christmas");
-            }
+            {% else %}
+                console.log("Not december");
+            {% endif %}
         });
         
         
