@@ -536,7 +536,6 @@ def display_wrapped(request, limit, period):
     access_token = SpotifyToken.objects.get(user=request.user).access_token
     user_profile = get_user_profile(access_token)
     top_genre = get_user_top_genre(access_token, limit, period)
-
     if Wrapped.objects.filter(date_created=now, time_period=period, user=request.user).exists():
         wrapped = Wrapped.objects.get(date_created=now, time_period=period, user=request.user)
         context = {'top_artists': wrapped.data["artists"],
@@ -544,6 +543,7 @@ def display_wrapped(request, limit, period):
                    'desc': wrapped.desc,
                    'top_genre': top_genre,
                    'user_profile': user_profile,
+                   'is_december': wrapped.date_created.month == 12
                    }
     else:
         wrapped = generate_wrapped(request.user, limit, period)
@@ -625,6 +625,7 @@ def view_past_wrap(request, item_id):
                'desc': wrapped['desc'],
                'top_genre': top_genre,
                'user_profile': user_profile,
+               'is_december': wrapped_obj.date_created.month == 12
                }
     return render(request, 'view_past_wrap.html', context)
 
@@ -737,6 +738,7 @@ def duo_wrapped(request, friend_id):
         'shared_genres': list(shared_genres),  # Convert set to list
         'shared_tracks': shared_tracks,
         'compatibility_desc': compatibility_desc,
+        'is_december': datetime.datetime.now().month == 12
     }
 
     # Save the DuoWrapped object
@@ -795,6 +797,7 @@ def view_duo_wrapped_detail(request, duo_wrapped_id, item_id):
     friend = get_object_or_404(User, id=item_id)
     context.update({
         'friend': friend,
+        'is_december': duo_wrapped.date_created.month == 12
     })
 
     return render(request, 'view_past_duo.html', context)

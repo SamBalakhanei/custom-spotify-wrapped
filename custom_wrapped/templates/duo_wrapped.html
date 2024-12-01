@@ -79,5 +79,18 @@
                 navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
             });
         });
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if is_december %}
+                const selectedTheme = 'christmas';
+                document.documentElement.setAttribute('data-theme', selectedTheme);
+                localStorage.setItem('selectedTheme', selectedTheme);
+                console.log("Theme set to Christmas");
+                document.getElementById('themes').value = selectedTheme;
+            {% else %}
+                console.log("Not december");
+            {% endif %}
+
+        });
     </script>
 {% endblock extra_js %}
