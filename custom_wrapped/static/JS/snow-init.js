@@ -2,7 +2,7 @@ function isNearChristmas() {
   const today = new Date();
   const currentYear = today.getFullYear();
   
-  const startOfChristmasRange = new Date(currentYear, 11, 1); // December 1st 
+  const startOfChristmasRange = new Date(currentYear, 10, 30); // December 1st 
   const endOfChristmasRange = new Date(currentYear, 11, 26); // December 26th
 
   return today >= startOfChristmasRange && today <= endOfChristmasRange;

@@ -9,6 +9,7 @@
 
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+<div id="ghostImage" data-image-url="{% static 'imgs/ghost-outline-png.webp' %}" alt="Ghost Outline">
 
 
     <h1 class="text-4xl text-center font-bold p-10 text-text">
@@ -84,20 +85,43 @@
         });
         
         document.addEventListener('DOMContentLoaded', function () {
-            {% if is_december %}
+            var created = new Date({{ date_created }});  // Convert to a Date object
+
+            const currentYear = created.getFullYear();
+
+  
+            const startOfChristmasRange = new Date(currentYear, 10, 30);
+            const endOfChristmasRange = new Date(currentYear, 11, 26);
+          
+            const startOfHalloweenRange = new Date(currentYear, 9, 1);
+            const endOfHalloweenRange = new Date(currentYear, 10, 1);
+                  
+            const nearChristmas = created >= startOfChristmasRange && created <= endOfChristmasRange;
+            const nearHalloween = created >= startOfHalloweenRange && created <= endOfHalloweenRange;
+          
+            console.log("near christmas " + nearChristmas);
+            console.log("near hallow " + nearHalloween);
+
+
+            if (nearChristmas) {
                 const selectedTheme = 'christmas';
                 document.documentElement.setAttribute('data-theme', selectedTheme);
                 localStorage.setItem('selectedTheme', selectedTheme);
                 document.getElementById('themes').value = selectedTheme;
                 console.log("Theme set to Christmas");
-            {% else %}
-                console.log("Not december");
-            {% endif %}
+            } else if (nearHalloween) {
+                const selectedTheme = 'halloween';
+                document.documentElement.setAttribute('data-theme', selectedTheme);
+                localStorage.setItem('selectedTheme', selectedTheme);
+                document.getElementById('themes').value = selectedTheme;
+                console.log("Theme set to halloween");
+
+            }
         });
+
     </script>
 
     <script src="{% static 'JS/snow-init.js' %}"></script>
-    <div id="ghostImage" data-image-url="{% static 'imgs/ghost-outline-png.webp' %}" alt="Ghost Outline">
     <script src="{% static 'JS/ghost-init.js' %}"></script>
 
 {% endblock extra_js %}
