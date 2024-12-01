@@ -374,10 +374,16 @@ def remove_friend(request, friend_id):
 
 
 def show_top_tracks(request):
+    """
+    Loads top_tracks
+    """
     return render(request, 'top_tracks.html')
 
 
 def contact_us(request):
+    """
+    Loads the contact us page
+    """
     return render(request, 'contact_us.html')
 
 
@@ -464,7 +470,6 @@ def generate_desc(top_artists):
         string: Description of the user.
     """
 
-
     model = genai.GenerativeModel("gemini-1.5-flash")
     # top 5 genres:
     top_5_genres = get_top_genres(top_artists)
@@ -475,6 +480,11 @@ def generate_desc(top_artists):
 
 
 def get_top_genres(top_artists):
+    """
+    Gets top genres for the top artists
+    :param top_artists: top artists the user listens to.
+    :return:
+    """
     genres = []
 
     for key, artist in top_artists.items():
@@ -603,6 +613,12 @@ def create_new_wrapped(request, limit=10, period='medium_term'):
 
 
 def view_past_wrap(request, item_id):
+    """
+    Loads a past solo-wrapped
+    :param request:
+    :param item_id: wrapped id
+    :return:
+    """
     wrapped_obj = Wrapped.objects.get(id=item_id)  # Fetches the object with the given ID
     wrapped = {
         'id': wrapped_obj.id,
@@ -664,6 +680,13 @@ def select_period(request):
 
 
 def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
+    """
+    Gets spotify data for medium term
+    :param request:
+    :param limit 10: only 10 items
+    :param period: time period is medium term
+    :return:
+    """
     # profile = get_user_profile(access_token)
     artists = get_top_artists(profile, limit, period)
     tracks = get_top_tracks(profile, limit, period)
@@ -680,6 +703,12 @@ def get_spotify_wrapped_data(request, limit=10, period='medium_term'):
 
 @login_required
 def duo_wrapped(request, friend_id):
+    """
+    Creates a duo wrapped with a friend
+    :param request:
+    :param friend_id: id of the friend to create a wrapped with
+    :return:
+    """
     friend = get_object_or_404(User, id=friend_id)
     friend_wrapped = Wrapped.objects.filter(user=friend).order_by('-date_created').first()
     if not friend_wrapped:
@@ -778,6 +807,11 @@ def generate_compat(user_genres, friend_genres):
 
 @login_required
 def view_past_duo_wrappeds(request):
+    """
+    Finds past duo wrappeds
+    :param request:
+    :return:
+    """
     past_duos = DuoWrapped.objects.filter(user=request.user).order_by('-date_created')
 
     context = {
@@ -788,6 +822,13 @@ def view_past_duo_wrappeds(request):
 
 @login_required
 def view_duo_wrapped_detail(request, duo_wrapped_id, item_id):
+    """
+    Loads a previously saved duo wrapped
+    :param request:
+    :param duo_wrapped_id: id of the wrapped duo
+    :param item_id: id of the wrapped item
+    :return:
+    """
     # Fetch the DuoWrapped object using the ID
     duo_wrapped = get_object_or_404(DuoWrapped, id=duo_wrapped_id, user=request.user)
 
