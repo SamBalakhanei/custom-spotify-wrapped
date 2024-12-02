@@ -10,6 +10,11 @@
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 <div id="ghostImage" data-image-url="{% static 'imgs/ghost-outline-png.webp' %}" alt="Ghost Outline">
+    <a href="{% url 'profile' %}" class="flex-1">
+        <button class="flex flex-col items-center justify-center w-32 focus:outline-none text-text bg-accent font-medium rounded-lg text-sm px-4 py-2">
+            <p class="text-center">{% trans "Back to Profile" %}</p>
+        </button>
+    </a>
 
 
     <h1 class="text-4xl text-center font-bold p-10 text-text">
