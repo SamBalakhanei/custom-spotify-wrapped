@@ -16,7 +16,7 @@
         {% trans "Duo Wrapped: " %} {{ user.username }} & {{ friend.username }}
     </h1>
 
-    <div class="swiper mt-8 max-w-4xl mx-auto border-4 border-accent rounded-lg">
+    <div class="swiper mt-8 max-w-4xl mx-auto border-4 border-accent rounded-lg" style="height:auto">
         <div class="swiper-wrapper">
             <!-- Slide 1: Introduction -->
             <div class="swiper-slide text-center text-text text-xl">
@@ -47,81 +47,76 @@
                 <p class="text-lg">{{ compatibility_desc }}</p>
             </div>
 
-<!-- Summary Slide -->
-<div class="swiper-slide text-center text-text">
-    <div class="p-4">
-        <h2 class="text-3xl font-bold mb-4">{% trans "In Summary" %}</h2>
+            <!-- Summary Slide -->
+            <div class="swiper-slide text-center text-text">
+                <div class="p-4">
+                    <h2 class="text-3xl font-bold mb-4">{% trans "In Summary" %}</h2>
 
-        <!-- Shared Genres -->
-        <h3 class="text-2xl font-semibold mt-8 mb-2 text-text">{% trans "Shared Top Genres" %}</h3>
-        <ul class="list-disc list-inside text-lg text-text">
-            {% for genre in shared_genres %}
-                <li>{{ genre }}</li>
-            {% empty %}
-                <li>{% trans "No shared genres found." %}</li>
-            {% endfor %}
-        </ul>
-    </div>
-</div>
-
+                    <!-- Shared Genres -->
+                    <h3 class="text-2xl font-semibold mt-8 mb-2 text-text">{% trans "Shared Top Genres" %}</h3>
+                    <ul class="list-disc list-inside text-lg text-text">
+                        {% for genre in shared_genres %}
+                            <li>{{ genre }}</li>
+                        {% empty %}
+                            <li>{% trans "No shared genres found." %}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
         </div>
 
         <div class="swiper-pagination"></div>
         <div class="swiper-button-next"></div>
         <div class="swiper-button-prev"></div>
     </div>
+</div>
 {% endblock content %}
 
 {% block extra_js %}
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            new Swiper('.swiper', {
-                loop: true,
-                slidesPerView: 1,
-                spaceBetween: 30,
-                pagination: { el: '.swiper-pagination', clickable: true },
-                navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-            });
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        new Swiper('.swiper', {
+            loop: true,
+            autoHeight: true, // Dynamically adjusts height based on active slide content
+            slidesPerView: 1,
+            spaceBetween: 30,
+            pagination: { el: '.swiper-pagination', clickable: true },
+            navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
         });
-        
-        document.addEventListener('DOMContentLoaded', function () {
-            var created = new Date({{ date_created }});  // Convert to a Date object
+    });
 
-            const currentYear = created.getFullYear();
+    document.addEventListener('DOMContentLoaded', function () {
+        var created = new Date({{ date_created }}); // Convert to a Date object
+        const currentYear = created.getFullYear();
 
-  
-            const startOfChristmasRange = new Date(currentYear, 10, 30);
-            const endOfChristmasRange = new Date(currentYear, 11, 26);
-          
-            const startOfHalloweenRange = new Date(currentYear, 9, 1);
-            const endOfHalloweenRange = new Date(currentYear, 10, 1);
-                  
-            const nearChristmas = created >= startOfChristmasRange && created <= endOfChristmasRange;
-            const nearHalloween = created >= startOfHalloweenRange && created <= endOfHalloweenRange;
-          
-            console.log("near christmas " + nearChristmas);
-            console.log("near hallow " + nearHalloween);
+        const startOfChristmasRange = new Date(currentYear, 10, 30);
+        const endOfChristmasRange = new Date(currentYear, 11, 26);
 
+        const startOfHalloweenRange = new Date(currentYear, 9, 1);
+        const endOfHalloweenRange = new Date(currentYear, 10, 1);
 
-            if (nearChristmas) {
-                const selectedTheme = 'christmas';
-                document.documentElement.setAttribute('data-theme', selectedTheme);
-                localStorage.setItem('selectedTheme', selectedTheme);
-                document.getElementById('themes').value = selectedTheme;
-                console.log("Theme set to Christmas");
-            } else if (nearHalloween) {
-                const selectedTheme = 'halloween';
-                document.documentElement.setAttribute('data-theme', selectedTheme);
-                localStorage.setItem('selectedTheme', selectedTheme);
-                document.getElementById('themes').value = selectedTheme;
-                console.log("Theme set to halloween");
+        const nearChristmas = created >= startOfChristmasRange && created <= endOfChristmasRange;
+        const nearHalloween = created >= startOfHalloweenRange && created <= endOfHalloweenRange;
 
-            }
-        });
+        console.log("near christmas " + nearChristmas);
+        console.log("near hallow " + nearHalloween);
 
-    </script>
+        if (nearChristmas) {
+            const selectedTheme = 'christmas';
+            document.documentElement.setAttribute('data-theme', selectedTheme);
+            localStorage.setItem('selectedTheme', selectedTheme);
+            document.getElementById('themes').value = selectedTheme;
+            console.log("Theme set to Christmas");
+        } else if (nearHalloween) {
+            const selectedTheme = 'halloween';
+            document.documentElement.setAttribute('data-theme', selectedTheme);
+            localStorage.setItem('selectedTheme', selectedTheme);
+            document.getElementById('themes').value = selectedTheme;
+            console.log("Theme set to halloween");
+        }
+    });
+</script>
 
-    <script src="{% static 'JS/snow-init.js' %}"></script>
-    <script src="{% static 'JS/ghost-init.js' %}"></script>
-
+<script src="{% static 'JS/snow-init.js' %}"></script>
+<script src="{% static 'JS/ghost-init.js' %}"></script>
 {% endblock extra_js %}
