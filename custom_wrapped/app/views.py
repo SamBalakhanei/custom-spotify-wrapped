@@ -5,6 +5,7 @@ import os
 
 from django.template import TemplateDoesNotExist
 from dotenv import load_dotenv
+from django.contrib import messages
 import requests
 from django.http import JsonResponse
 from .forms import RegisterForm, CustomLoginForm
@@ -288,28 +289,28 @@ def profile(request):
 @login_required
 def send_friend_request(request):
     """
-    If the user sends a friend request, it will only be sent if not already sent/added
+    If the user sends a friend request, it will only be sent if not already sent/added.
     """
     if request.method == "POST":
-        # Get the username from the form input
         username = request.POST.get('username')
-        print(f"Username received: {username}")  # Debugging
+        try:
+            # Try to find the user by username
+            friend = User.objects.get(username=username)
 
-        # Check if the user with this username exists
-        friend = get_object_or_404(User, username=username)
+            # Check if a friend request already exists
+            existing_request = Friend.objects.filter(user=request.user, friend=friend).exists() or \
+                               Friend.objects.filter(user=friend, friend=request.user).exists()
 
-        # Check if a friend request already exists to prevent duplicates
-        existing_request = Friend.objects.filter(user=request.user, friend=friend).exists() or \
-                           Friend.objects.filter(user=friend, friend=request.user).exists()
+            if not existing_request:
+                # Create a friend request entry
+                Friend.objects.create(user=request.user, friend=friend, status='sent')
+                messages.success(request, "Friend request sent successfully!")
+            else:
+                messages.warning(request, "Friend request already exists.")
 
-        print(f"Existing request found: {existing_request}")  # Debugging
-
-        if not existing_request:
-            # Create a friend request entry where request.user is the sender and friend is the recipient
-            Friend.objects.create(user=request.user, friend=friend, status='sent')
-            print("Friend request created successfully")  # Debugging
-        else:
-            print("Friend request already exists, not creating another.")  # Debugging
+        except User.DoesNotExist:
+            # Add an error message if the user does not exist
+            messages.error(request, "User does not exist.")
 
     return redirect('profile')
 
